@@ -57,6 +57,7 @@ export default function CreateCasePage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
+    console.log('📋 القيم المُرسلة للسيرفر:', form);
     mutation.mutate(form);
   };
 
