@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { rolesApi } from '@/lib/api';
 import Spinner from '@/components/common/Spinner';
@@ -9,6 +10,7 @@ import Button from '@/components/ui/Button';
 
 export default function RolesPage() {
   const { tenantApi } = useAuth();
+  const router = useRouter();
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -41,8 +43,12 @@ export default function RolesPage() {
             <div key={role.id} className="bg-white rounded-xl border border-gray-200 p-5">
               <div className="flex items-start justify-between mb-3">
                 <p className="font-semibold text-gray-900">{role.name}</p>
-                <button onClick={() => { if (confirm('حذف هذا الدور؟')) deleteMutation.mutate(role.id); }}
-                  className="text-red-500 hover:text-red-700 text-xs">حذف</button>
+                <div className="flex gap-3">
+                  <button onClick={() => router.push(`/settings/roles/${role.id}/edit`)}
+                    className="text-blue-500 hover:text-blue-700 text-xs">تعديل</button>
+                  <button onClick={() => { if (confirm('حذف هذا الدور؟')) deleteMutation.mutate(role.id); }}
+                    className="text-red-500 hover:text-red-700 text-xs">حذف</button>
+                </div>
               </div>
               {role.permissions?.length > 0 && (
                 <div className="flex flex-wrap gap-1">

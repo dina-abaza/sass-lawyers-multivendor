@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { wakalasApi } from '@/lib/api';
 import Spinner from '@/components/common/Spinner';
@@ -9,6 +10,7 @@ import Button from '@/components/ui/Button';
 
 export default function WakalasPage() {
   const { tenantApi } = useAuth();
+  const router = useRouter();
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -55,8 +57,12 @@ export default function WakalasPage() {
                   <td className="px-4 py-3 text-gray-600">{w.wakala_date_hijri}</td>
                   <td className="px-4 py-3 text-gray-600">{w.wakala_expiry_hijri}</td>
                   <td className="px-4 py-3 text-left">
-                    <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(w.id); }}
-                      className="text-red-600 hover:text-red-800 text-xs">حذف</button>
+                    <div className="flex gap-3 justify-end">
+                      <button onClick={() => router.push(`/wakalas/${w.id}/edit`)}
+                        className="text-blue-600 hover:text-blue-800 text-xs">تعديل</button>
+                      <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(w.id); }}
+                        className="text-red-600 hover:text-red-800 text-xs">حذف</button>
+                    </div>
                   </td>
                 </tr>
               ))}
