@@ -54,7 +54,8 @@ export default function VacationsPage() {
                   <td className="px-4 py-3 text-gray-600">{v.start_date}</td>
                   <td className="px-4 py-3 text-gray-600">{v.end_date}</td>
                   <td className="px-4 py-3 text-gray-600">{v.notes}</td>
-                  <td className="px-4 py-3 text-left">
+                  <td className="px-4 py-3 text-left whitespace-nowrap">
+                    <Link href={`/hr/vacations/${v.id}/edit`} className="text-indigo-600 hover:underline text-xs me-3">تعديل</Link>
                     <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(v.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>

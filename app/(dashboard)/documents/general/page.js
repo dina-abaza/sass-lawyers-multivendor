@@ -36,22 +36,38 @@ export default function GeneralDocumentsPage() {
       ) : list.length === 0 ? (
         <div className="text-center py-12 text-gray-500">لا توجد مستندات</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {list.map((d) => (
-            <div key={d.id} className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <p className="font-semibold text-gray-900">{d.file_type}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{d.description}</p>
-                </div>
-                <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(d.id); }}
-                  className="text-red-500 hover:text-red-700 text-xs">حذف</button>
-              </div>
-              {d.files?.length > 0 && (
-                <p className="text-xs text-gray-400">{d.files.length} ملف مرفق</p>
-              )}
-            </div>
-          ))}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">نوع الملف</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الوصف</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">ملاحظات</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الملفات</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {list.map((d) => (
+                <tr key={d.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{d.file_type}</td>
+                  <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{d.description || '—'}</td>
+                  <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{d.notes || '—'}</td>
+                  <td className="px-4 py-3">
+                    {Array.isArray(d.files) && d.files.length > 0
+                      ? <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{d.files.length} ملف</span>
+                      : <span className="text-gray-400">—</span>}
+                  </td>
+                  <td className="px-4 py-3 text-left whitespace-nowrap">
+                    <Link href={`/documents/general/${d.id}`} className="text-blue-600 hover:underline text-xs me-3">عرض</Link>
+                    <Link href={`/documents/general/${d.id}/edit`} className="text-indigo-600 hover:underline text-xs me-3">تعديل</Link>
+                    <button onClick={() => { if (confirm('حذف هذا المستند؟')) deleteMutation.mutate(d.id); }}
+                      className="text-red-600 hover:text-red-800 text-xs">حذف</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

@@ -60,6 +60,7 @@ export default function ContractsPage() {
                   <td className="px-4 py-3 text-gray-600">{c.value?.toLocaleString()}</td>
                   <td className="px-4 py-3 text-left">
                     <Link href={`/contracts/${c.id}`} className="text-blue-600 hover:underline text-xs me-3">عرض</Link>
+                    <Link href={`/contracts/${c.id}/edit`} className="text-gray-600 hover:underline text-xs me-3">تعديل</Link>
                     <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(c.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>

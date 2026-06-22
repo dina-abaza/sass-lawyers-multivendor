@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { tasksApi, employeesApi, casesApi } from '@/lib/api';
@@ -10,6 +10,7 @@ import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
+import Spinner from '@/components/common/Spinner';
 
 const TASK_TYPES = [
   { value: 'internal', label: 'داخلية' },
@@ -21,29 +22,56 @@ const TASK_STATUSES = [
   { value: 'archived',  label: 'مؤرشفة' },
 ];
 
-export default function CreateTaskPage() {
+export default function EditTaskPage() {
+  const { id } = useParams();
   const { tenantApi } = useAuth();
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: '', employee_id: '', case_id: '', type: '', status: 'active',
-    date: '', date_hijri: '', time: '', notes: '',
-  });
+  const qc = useQueryClient();
+  const [form, setForm] = useState(null);
   const [error, setError] = useState(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['task', id],
+    queryFn: () => tasksApi.getById(tenantApi, id).then((r) => r.data),
+    enabled: !!tenantApi && !!id,
+  });
 
   const { data: employees } = useQuery({
     queryKey: ['employees-list'],
     queryFn: () => employeesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
+
   const { data: cases } = useQuery({
     queryKey: ['cases-list'],
     queryFn: () => casesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
+  useEffect(() => {
+    const t = data?.data ?? data;
+    if (t && !form) {
+      setForm({
+        name:        t.name        ?? '',
+        employee_id: t.employee_id ?? '',
+        case_id:     t.case_id     ?? '',
+        type:        t.type        ?? '',
+        status:      t.status      ?? 'active',
+        date:        t.date        ?? '',
+        date_hijri:  t.date_hijri  ?? '',
+        time:        t.time        ?? '',
+        notes:       t.notes       ?? '',
+      });
+    }
+  }, [data, form]);
+
   const mutation = useMutation({
-    mutationFn: (data) => tasksApi.create(tenantApi, data),
-    onSuccess: () => router.push('/tasks'),
+    mutationFn: (payload) => tasksApi.update(tenantApi, id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tasks'] });
+      qc.invalidateQueries({ queryKey: ['tasks-archive'] });
+      router.push('/tasks');
+    },
     onError: setError,
   });
 
@@ -54,11 +82,13 @@ export default function CreateTaskPage() {
     return list.map((x) => ({ value: x.id, label: labelFn(x) }));
   }
 
+  if (isLoading || !form) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
+
   return (
     <div className="p-6 max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
         <Link href="/tasks"><Button variant="ghost" size="sm">→</Button></Link>
-        <h1 className="text-2xl font-bold text-gray-900">مهمة جديدة</h1>
+        <h1 className="text-2xl font-bold text-gray-900">تعديل المهمة</h1>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(form); }}
@@ -68,9 +98,9 @@ export default function CreateTaskPage() {
         <Input label="اسم المهمة" name="name" value={form.name} onChange={handleChange} required />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select label="الموظف" name="employee_id" value={form.employee_id} onChange={handleChange}
+          <Select label="الموظف" name="employee_id" value={String(form.employee_id)} onChange={handleChange}
             options={toOptions(employees, (x) => x.name)} required />
-          <Select label="القضية" name="case_id" value={form.case_id} onChange={handleChange}
+          <Select label="القضية" name="case_id" value={String(form.case_id)} onChange={handleChange}
             options={toOptions(cases, (x) => x.case_number || `#${x.id}`)} />
         </div>
 
@@ -95,7 +125,7 @@ export default function CreateTaskPage() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" loading={mutation.isPending}>حفظ المهمة</Button>
+          <Button type="submit" loading={mutation.isPending}>حفظ التعديلات</Button>
           <Link href="/tasks"><Button variant="outline">إلغاء</Button></Link>
         </div>
       </form>

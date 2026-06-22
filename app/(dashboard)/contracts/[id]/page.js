@@ -37,17 +37,23 @@ export default function ContractDetailPage() {
           </svg>
         </button>
         <h1 className="text-2xl font-bold text-gray-900">تفاصيل العقد</h1>
+        <div className="mr-auto">
+          <Link href={`/contracts/${id}/edit`}
+            className="px-3 py-1.5 border border-gray-300 text-sm rounded-lg hover:bg-gray-50">
+            تعديل
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
         <div className="px-6 py-4 flex justify-between">
           <span className="text-sm text-gray-500">رقم العقد</span>
-          <span className="text-sm font-medium text-gray-900">#{contract.id}</span>
+          <span className="text-sm font-mono font-medium text-gray-900">{contract.contract_number || `#${contract.id}`}</span>
         </div>
-        {contract.title && (
+        {contract.name && (
           <div className="px-6 py-4 flex justify-between">
-            <span className="text-sm text-gray-500">العنوان</span>
-            <span className="text-sm font-medium text-gray-900">{contract.title}</span>
+            <span className="text-sm text-gray-500">اسم العقد</span>
+            <span className="text-sm font-medium text-gray-900">{contract.name}</span>
           </div>
         )}
         {contract.customer && (
@@ -59,41 +65,38 @@ export default function ContractDetailPage() {
         {contract.start_date && (
           <div className="px-6 py-4 flex justify-between">
             <span className="text-sm text-gray-500">تاريخ البداية</span>
-            <span className="text-sm font-medium text-gray-900">{contract.start_date}</span>
+            <span className="text-sm font-medium text-gray-900">{String(contract.start_date).substring(0, 10)}</span>
           </div>
         )}
         {contract.end_date && (
           <div className="px-6 py-4 flex justify-between">
             <span className="text-sm text-gray-500">تاريخ الانتهاء</span>
-            <span className="text-sm font-medium text-gray-900">{contract.end_date}</span>
+            <span className="text-sm font-medium text-gray-900">{String(contract.end_date).substring(0, 10)}</span>
           </div>
         )}
-        {contract.amount != null && (
+        {contract.value != null && (
           <div className="px-6 py-4 flex justify-between">
-            <span className="text-sm text-gray-500">المبلغ</span>
-            <span className="text-sm font-medium text-gray-900">{Number(contract.amount).toLocaleString('ar-SA')} ر.س</span>
-          </div>
-        )}
-        {contract.type && (
-          <div className="px-6 py-4 flex justify-between">
-            <span className="text-sm text-gray-500">النوع</span>
-            <span className="text-sm font-medium text-gray-900">{contract.type}</span>
-          </div>
-        )}
-        {contract.status && (
-          <div className="px-6 py-4 flex justify-between">
-            <span className="text-sm text-gray-500">الحالة</span>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-              contract.status === 'active' ? 'bg-green-100 text-green-700' :
-              contract.status === 'expired' ? 'bg-red-100 text-red-700' :
-              'bg-yellow-100 text-yellow-700'
-            }`}>{contract.status}</span>
+            <span className="text-sm text-gray-500">قيمة العقد</span>
+            <span className="text-sm font-medium text-gray-900">{Number(contract.value).toLocaleString()} ر.س</span>
           </div>
         )}
         {contract.notes && (
           <div className="px-6 py-4">
             <span className="text-sm text-gray-500 block mb-1">ملاحظات</span>
             <p className="text-sm text-gray-800">{contract.notes}</p>
+          </div>
+        )}
+        {contract.invoices && contract.invoices.length > 0 && (
+          <div className="px-6 py-4">
+            <span className="text-sm text-gray-500 block mb-2">الفواتير المرتبطة ({contract.invoices.length})</span>
+            <div className="space-y-1">
+              {contract.invoices.map((inv) => (
+                <div key={inv.id} className="flex justify-between text-sm">
+                  <span className="text-gray-600">فاتورة #{inv.id}</span>
+                  <span className="font-medium text-gray-900">{Number(inv.total_amount).toLocaleString()} ر.س</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

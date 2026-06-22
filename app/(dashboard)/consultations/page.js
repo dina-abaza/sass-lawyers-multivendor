@@ -25,7 +25,10 @@ export default function ConsultationsPage() {
   const list = Array.isArray(data) ? data : data?.data ?? [];
 
   const typeLabel = { oral: 'شفهية', written: 'مكتوبة' };
-  const classLabel = { commercial: 'تجارية', civil: 'مدنية', criminal: 'جنائية', family: 'أسرة' };
+  const classLabel = {
+    commercial: 'تجارية', civil: 'مدنية', criminal: 'جنائية', family: 'أسرة',
+    labor: 'عمالية', environmental: 'بيئية', investment: 'استثمارية', international: 'دولية',
+  };
 
   return (
     <div className="p-6">
@@ -48,6 +51,7 @@ export default function ConsultationsPage() {
                 <th className="px-4 py-3 text-right font-medium text-gray-600">النوع</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">التصنيف</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">المبلغ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الرد</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
@@ -59,8 +63,14 @@ export default function ConsultationsPage() {
                   <td className="px-4 py-3 text-gray-600">{typeLabel[c.consultation_type] || c.consultation_type}</td>
                   <td className="px-4 py-3 text-gray-600">{classLabel[c.general_classification] || c.general_classification}</td>
                   <td className="px-4 py-3 text-gray-600">{c.amount?.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-left">
+                  <td className="px-4 py-3">
+                    {c.response_text
+                      ? <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">تم الرد</span>
+                      : <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">في الانتظار</span>}
+                  </td>
+                  <td className="px-4 py-3 text-left whitespace-nowrap">
                     <Link href={`/consultations/${c.id}`} className="text-blue-600 hover:underline text-xs me-3">عرض</Link>
+                    <Link href={`/consultations/${c.id}/edit`} className="text-indigo-600 hover:underline text-xs me-3">تعديل</Link>
                     <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(c.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>

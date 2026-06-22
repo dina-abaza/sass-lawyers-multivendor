@@ -7,7 +7,16 @@ import { legalDocsApi } from '@/lib/api';
 import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 
-const DOC_TYPES = { ownership_deed: 'سند ملكية', special_agency: 'وكالة خاصة', general_agency: 'وكالة عامة', contract: 'عقد', other: 'أخرى' };
+const DOC_TYPES = {
+  general_agency:  'وكالة عامة',
+  special_agency:  'وكالة خاصة',
+  periodic_agency: 'وكالة دورية - عدلية',
+  declaration:     'إقرار',
+  debt_settlement: 'سداد دين',
+  legal_pledge:    'تعهد عدلي',
+  ownership_deed:  'صك ملكية',
+  other:           'أخرى',
+};
 
 export default function LegalDocumentsPage() {
   const { tenantApi } = useAuth();
@@ -45,6 +54,8 @@ export default function LegalDocumentsPage() {
                 <th className="px-4 py-3 text-right font-medium text-gray-600">العميل</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">نوع المستند</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">رقم المستند</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">رقم الوكالة</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الملفات</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">الوصف</th>
                 <th className="px-4 py-3"></th>
               </tr>
@@ -52,12 +63,20 @@ export default function LegalDocumentsPage() {
             <tbody className="divide-y divide-gray-100">
               {list.map((d) => (
                 <tr key={d.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-900">{d.customer?.name || d.customer_id}</td>
+                  <td className="px-4 py-3 text-gray-900">{d.customer?.name || `#${d.customer_id}`}</td>
                   <td className="px-4 py-3 text-gray-600">{DOC_TYPES[d.document_type] || d.document_type}</td>
                   <td className="px-4 py-3 font-mono text-gray-600">{d.document_number}</td>
-                  <td className="px-4 py-3 text-gray-600">{d.description}</td>
-                  <td className="px-4 py-3 text-left">
-                    <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(d.id); }}
+                  <td className="px-4 py-3 text-gray-600">{d.agency_number || '—'}</td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {Array.isArray(d.files) && d.files.length > 0
+                      ? <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{d.files.length} ملف</span>
+                      : '—'}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{d.description || '—'}</td>
+                  <td className="px-4 py-3 text-left whitespace-nowrap">
+                    <Link href={`/documents/legal/${d.id}`} className="text-blue-600 hover:underline text-xs me-3">عرض</Link>
+                    <Link href={`/documents/legal/${d.id}/edit`} className="text-indigo-600 hover:underline text-xs me-3">تعديل</Link>
+                    <button onClick={() => { if (confirm('حذف هذا المستند؟')) deleteMutation.mutate(d.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>
                 </tr>

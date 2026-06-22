@@ -44,21 +44,27 @@ export default function SessionsPage() {
               <tr>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">رقم الجلسة</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">القضية</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الجهة القضائية</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">الجهة</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">التاريخ</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">الوقت</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الحالة</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {list.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{s.session_number}</td>
-                  <td className="px-4 py-3 text-gray-600">{s.case?.case_number || s.case_id}</td>
-                  <td className="px-4 py-3 text-gray-600">{s.court_side || s.agency}</td>
-                  <td className="px-4 py-3 text-gray-600">{s.date}</td>
-                  <td className="px-4 py-3 text-gray-600">{s.session_time}</td>
-                  <td className="px-4 py-3 text-left">
+                  <td className="px-4 py-3 font-medium text-gray-900">{s.session_number || `#${s.id}`}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.legal_case?.case_number || s.case_id}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.court_side || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.agency || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.date || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.session_time || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600">{s.status?.name || '—'}</td>
+                  <td className="px-4 py-3 text-left whitespace-nowrap">
+                    <Link href={`/sessions/${s.id}`} className="text-blue-600 hover:underline text-xs me-3">عرض</Link>
+                    <Link href={`/sessions/${s.id}/edit`} className="text-indigo-600 hover:underline text-xs me-3">تعديل</Link>
                     <button
                       onClick={() => { if (confirm('حذف هذه الجلسة؟')) deleteMutation.mutate(s.id); }}
                       className="text-red-600 hover:text-red-800 text-xs"

@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
-import { legalDocsApi, customersApi } from '@/lib/api';
+import { legalDocsApi } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
+import Spinner from '@/components/common/Spinner';
 
 const MAX_FILE_MB = 5;
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
@@ -26,30 +27,46 @@ const DOC_TYPE_OPTIONS = [
   { value: 'other',           label: 'أخرى' },
 ];
 
-export default function CreateLegalDocPage() {
+export default function EditLegalDocPage() {
+  const { id } = useParams();
   const { tenantApi } = useAuth();
   const router = useRouter();
-  const [form, setForm] = useState({
-    customer_id: '', document_type: '', agency_number: '',
-    document_number: '', description: '', notes: '',
-  });
-  const [files, setFiles] = useState([]);
+  const qc = useQueryClient();
+  const [form, setForm] = useState(null);
+  const [newFiles, setNewFiles] = useState([]);
   const [error, setError] = useState(null);
 
-  const { data: customers } = useQuery({
-    queryKey: ['customers-list'],
-    queryFn: () => customersApi.getAll(tenantApi).then((r) => r.data),
-    enabled: !!tenantApi,
+  const { data, isLoading } = useQuery({
+    queryKey: ['legal-document', id],
+    queryFn: () => legalDocsApi.getById(tenantApi, id).then((r) => r.data),
+    enabled: !!tenantApi && !!id,
   });
+
+  useEffect(() => {
+    const doc = data?.data ?? data;
+    if (doc && !form) {
+      setForm({
+        document_type:   doc.document_type   ?? '',
+        agency_number:   doc.agency_number   ?? '',
+        document_number: doc.document_number ?? '',
+        description:     doc.description     ?? '',
+        notes:           doc.notes           ?? '',
+      });
+    }
+  }, [data, form]);
 
   const mutation = useMutation({
     mutationFn: () => {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => { if (v !== '') fd.append(k, v); });
-      files.forEach((f) => fd.append('files[]', f));
-      return legalDocsApi.create(tenantApi, fd);
+      newFiles.forEach((f) => fd.append('files[]', f));
+      return legalDocsApi.update(tenantApi, id, fd);
     },
-    onSuccess: () => router.push('/documents/legal'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['legal-documents'] });
+      qc.invalidateQueries({ queryKey: ['legal-document', id] });
+      router.push(`/documents/legal/${id}`);
+    },
     onError: setError,
   });
 
@@ -67,34 +84,29 @@ export default function CreateLegalDocPage() {
       e.target.value = '';
       return;
     }
-    setFiles(selected);
+    setNewFiles(selected);
   };
 
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
+  if (isLoading || !form) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
     <div className="p-6 max-w-xl">
       <ToastContainer position="top-right" rtl autoClose={5000} />
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/documents/legal"><Button variant="ghost" size="sm">→</Button></Link>
-        <h1 className="text-2xl font-bold text-gray-900">مستند قانوني جديد</h1>
+        <Link href={`/documents/legal/${id}`}><Button variant="ghost" size="sm">→</Button></Link>
+        <h1 className="text-2xl font-bold text-gray-900">تعديل المستند</h1>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(); }}
         className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
         <ErrorMessage error={error} />
 
-        <Select label="العميل" name="customer_id" value={form.customer_id} onChange={handleChange}
-          options={toOptions(customers)} required />
-        <Select label="نوع المستند" name="document_type" value={form.document_type} onChange={handleChange}
-          options={DOC_TYPE_OPTIONS} required />
+        <Select label="نوع المستند" name="document_type" value={form.document_type}
+          onChange={handleChange} options={DOC_TYPE_OPTIONS} required />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="رقم المستند" name="document_number" value={form.document_number}
-            onChange={handleChange} required placeholder="مثال: DOC-2024-001" />
+            onChange={handleChange} required />
           <Input label="رقم الوكالة" name="agency_number" value={form.agency_number}
             onChange={handleChange} placeholder="اختياري" />
         </div>
@@ -109,18 +121,18 @@ export default function CreateLegalDocPage() {
 
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">
-            الملفات <span className="text-red-500">*</span>
-            <span className="text-gray-400 font-normal text-xs me-1">(PDF, JPG, PNG — حد أقصى {MAX_FILE_MB} MB لكل ملف)</span>
+            إضافة ملفات جديدة
+            <span className="text-gray-400 font-normal text-xs me-1">(تُضاف للملفات الموجودة — حد أقصى {MAX_FILE_MB} MB لكل ملف)</span>
           </label>
           <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png"
             onChange={handleFilesChange}
             className="text-sm text-gray-600 file:me-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-gray-300 file:text-sm file:bg-white hover:file:bg-gray-50" />
-          {files.length > 0 && <p className="text-xs text-gray-500">{files.length} ملف محدد</p>}
+          {newFiles.length > 0 && <p className="text-xs text-gray-500">{newFiles.length} ملف محدد</p>}
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" loading={mutation.isPending}>حفظ المستند</Button>
-          <Link href="/documents/legal"><Button variant="outline">إلغاء</Button></Link>
+          <Button type="submit" loading={mutation.isPending}>حفظ التعديلات</Button>
+          <Link href={`/documents/legal/${id}`}><Button variant="outline">إلغاء</Button></Link>
         </div>
       </form>
     </div>

@@ -20,7 +20,10 @@ const CLASSIFICATIONS = [
   { value: 'civil', label: 'مدنية' },
   { value: 'criminal', label: 'جنائية' },
   { value: 'family', label: 'أسرة' },
-  { value: 'administrative', label: 'إدارية' },
+  { value: 'labor', label: 'عمالية' },
+  { value: 'environmental', label: 'بيئية' },
+  { value: 'investment', label: 'استثمارية' },
+  { value: 'international', label: 'دولية' },
 ];
 
 export default function CreateConsultationPage() {
