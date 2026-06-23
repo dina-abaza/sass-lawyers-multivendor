@@ -56,7 +56,9 @@ export default function PaymentVouchersPage() {
                   <td className="px-4 py-3 text-gray-600">{v.for_reason}</td>
                   <td className="px-4 py-3 text-gray-600">{v.voucher_date}</td>
                   <td className="px-4 py-3">{v.is_check ? '✓' : '-'}</td>
-                  <td className="px-4 py-3 text-left">
+                  <td className="px-4 py-3 text-left flex gap-3">
+                    <Link href={`/finance/payment-vouchers/${v.id}/edit`}
+                      className="text-blue-600 hover:text-blue-800 text-xs">تعديل</Link>
                     <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(v.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>

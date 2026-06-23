@@ -113,13 +113,15 @@ function AttendanceCard({ list, tenantApi, userId }) {
   /* حالة: انتهى اليوم */
   if (checkedIn && checkedOut) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-5 flex items-center gap-4">
-        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl">✓</div>
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center gap-4">
+        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
         <div>
-          <p className="font-semibold text-green-800">تم تسجيل الحضور والانصراف اليوم</p>
-          <p className="text-sm text-green-600 mt-0.5">
-            حضور {fmt(todayRecord.check_in)} — انصراف {fmt(todayRecord.check_out)}
-          </p>
+          <p className="font-semibold text-emerald-800">تم تسجيل الحضور والانصراف اليوم</p>
+          <p className="text-sm text-emerald-600 mt-0.5">حضور {fmt(todayRecord.check_in)} — انصراف {fmt(todayRecord.check_out)}</p>
         </div>
       </div>
     );
@@ -128,93 +130,69 @@ function AttendanceCard({ list, tenantApi, userId }) {
   const action = checkedIn ? 'out' : 'in';
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className={`w-3 h-3 rounded-full ${checkedIn ? 'bg-green-500' : 'bg-gray-300'}`} />
-        <h2 className="font-semibold text-gray-900">
+    <div className="bg-white border border-[#e4e9f2] rounded-2xl p-5 space-y-4">
+      <div className="flex items-center gap-2.5">
+        <div className={`w-2.5 h-2.5 rounded-full ${checkedIn ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+        <span className="text-sm font-medium text-slate-700">
           {checkedIn ? `حاضر منذ ${fmt(todayRecord.check_in)}` : 'لم يتم تسجيل الحضور اليوم'}
-        </h2>
+        </span>
       </div>
 
-      {/* GPS */}
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={gps.detect}
-          disabled={gps.status === 'loading'}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition"
-        >
-          {gps.status === 'loading' ? (
-            <span className="w-4 h-4 border-2 border-gray-400 border-t-blue-500 rounded-full animate-spin" />
-          ) : (
-            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          )}
+        <button type="button" onClick={gps.detect} disabled={gps.status === 'loading'}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
+            gps.status === 'success' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-[#e4e9f2] text-slate-600 hover:bg-navy-50 hover:border-navy-200'
+          } disabled:opacity-50`}>
+          {gps.status === 'loading'
+            ? <span className="w-4 h-4 border-2 border-slate-300 border-t-navy-600 rounded-full animate-spin" />
+            : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>}
           {gps.status === 'success' ? 'تم تحديد الموقع ✓' : 'تحديد الموقع تلقائياً'}
         </button>
         {gps.status === 'success' && (
-          <span className="text-xs text-gray-400">
-            {gps.coords.latitude.toFixed(4)}, {gps.coords.longitude.toFixed(4)}
-          </span>
+          <span className="text-xs text-slate-400 font-mono">{gps.coords.latitude.toFixed(4)}, {gps.coords.longitude.toFixed(4)}</span>
         )}
       </div>
 
-      {/* Work location */}
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">موقع العمل</label>
-        <select
-          value={locationId}
-          onChange={(e) => setLocationId(e.target.value)}
-          className="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-        >
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-slate-700">موقع العمل</label>
+        <select value={locationId} onChange={e => setLocationId(e.target.value)}
+          className="h-11 rounded-xl border border-[#e4e9f2] px-3 text-sm outline-none focus:ring-2 focus:ring-navy-700/20 focus:border-navy-500 bg-white">
           <option value="">اختر موقع العمل</option>
-          {locations.map((l) => (
-            <option key={l.id} value={l.id}>{l.name}</option>
-          ))}
+          {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
         </select>
       </div>
 
-      {/* Mission toggle */}
       <label className="flex items-center gap-3 cursor-pointer select-none">
-        <div
-          onClick={() => setIsMission((v) => !v)}
-          className={`w-10 h-6 rounded-full transition-colors ${isMission ? 'bg-blue-500' : 'bg-gray-200'} relative`}
-        >
+        <div onClick={() => setIsMission(v => !v)}
+          className={`w-10 h-6 rounded-full transition-colors relative flex-shrink-0 ${isMission ? 'bg-navy-700' : 'bg-gray-200'}`}>
           <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${isMission ? 'right-1' : 'right-5'}`} />
         </div>
-        <span className="text-sm text-gray-700">مأمورية خارجية</span>
+        <span className="text-sm text-slate-700">مأمورية خارجية</span>
       </label>
 
       {isMission && (
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">وصف المأمورية</label>
-          <textarea
-            rows={2}
-            value={missionDesc}
-            onChange={(e) => setMissionDesc(e.target.value)}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-slate-700">وصف المأمورية</label>
+          <textarea rows={2} value={missionDesc} onChange={e => setMissionDesc(e.target.value)}
             placeholder="مثال: زيارة عميل في المحكمة التجارية"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-          />
+            className="rounded-xl border border-[#e4e9f2] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-navy-700/20 focus:border-navy-500 resize-none" />
         </div>
       )}
 
-      {/* Messages */}
-      {apiError  && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{apiError}</p>}
-      {successMsg && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">{successMsg}</p>}
-      {gps.error  && <p className="text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">{gps.error}</p>}
+      {apiError   && <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">{apiError}</div>}
+      {successMsg && <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700">{successMsg}</div>}
+      {gps.error  && <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-700">{gps.error}</div>}
 
-      {/* Action button */}
-      <Button
-        onClick={() => handleSubmit(action)}
-        loading={isPending}
-        className={action === 'out' ? 'bg-red-600 hover:bg-red-700' : ''}
-      >
-        {action === 'in' ? '📍 تسجيل الحضور' : '🚪 تسجيل الانصراف'}
-      </Button>
+      <button onClick={() => handleSubmit(action)} disabled={isPending}
+        className={`w-full py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 ${
+          action === 'out' ? 'bg-red-600 hover:bg-red-700' : 'bg-navy-700 hover:bg-navy-800'
+        }`}>
+        {isPending
+          ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          : action === 'in' ? 'تسجيل الحضور' : 'تسجيل الانصراف'}
+      </button>
     </div>
   );
 }
@@ -232,8 +210,8 @@ export default function AttendancePage() {
   const list = Array.isArray(data) ? data : data?.data ?? [];
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">الحضور والانصراف</h1>
+    <div className="p-4 sm:p-6 space-y-5 max-w-5xl mx-auto">
+      <h1 className="text-xl font-bold text-navy-900">الحضور والانصراف — جميع الموظفين</h1>
 
       {/* بطاقة تسجيل الحضور/الانصراف */}
       {!isLoading && (
@@ -242,44 +220,44 @@ export default function AttendancePage() {
 
       {/* جدول السجلات */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">سجل الحضور</h2>
-
+        <h2 className="text-sm font-semibold text-slate-700 mb-3">سجل الحضور</h2>
         {isLoading ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : list.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">لا توجد سجلات حضور بعد</div>
+          <div className="bg-white border border-[#e4e9f2] rounded-2xl py-12 text-center text-sm text-slate-400">لا توجد سجلات حضور بعد</div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-[#e4e9f2] overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[#f4f6fb] border-b border-[#e4e9f2]">
                 <tr>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الموظف</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">التاريخ</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الحضور</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الانصراف</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">النطاق</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">مأمورية</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">ملاحظات</th>
+                  {['الموظف','التاريخ','الحضور','الانصراف','النطاق','مأمورية','خصم','ملاحظات'].map(h => (
+                    <th key={h} className="px-4 py-3 text-right text-xs font-semibold text-slate-500">{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {list.map((a) => (
-                  <tr key={a.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{a.employee?.name || '—'}</td>
-                    <td className="px-4 py-3 text-gray-600">{fmt(a.check_in, 'date')}</td>
-                    <td className="px-4 py-3 text-green-700 font-medium">{fmt(a.check_in)}</td>
+              <tbody className="divide-y divide-[#e4e9f2]">
+                {list.map(a => (
+                  <tr key={a.id} className="hover:bg-navy-50/30 transition-colors">
+                    <td className="px-4 py-3 font-medium text-navy-900">{a.employee?.name || '—'}</td>
+                    <td className="px-4 py-3 text-slate-600">{fmt(a.check_in, 'date')}</td>
+                    <td className="px-4 py-3 text-emerald-700 font-medium">{fmt(a.check_in)}</td>
                     <td className="px-4 py-3 text-red-700 font-medium">{fmt(a.check_out)}</td>
                     <td className="px-4 py-3">
                       {a.is_outside_range
-                        ? <span className="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">خارج النطاق</span>
-                        : <span className="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">داخل النطاق</span>}
+                        ? <span className="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700">خارج النطاق</span>
+                        : <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700">داخل النطاق</span>}
                     </td>
                     <td className="px-4 py-3">
                       {a.mission_id
-                        ? <span className="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">مأمورية</span>
-                        : <span className="text-gray-400">—</span>}
+                        ? <span className="px-2 py-0.5 rounded-full text-xs bg-navy-100 text-navy-700">مأمورية</span>
+                        : <span className="text-slate-300">—</span>}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{a.notes || '—'}</td>
+                    <td className="px-4 py-3">
+                      {a.deduction_sheet
+                        ? <span className="px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700">{a.deduction_sheet.amount} ريال</span>
+                        : <span className="text-slate-300">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 max-w-xs truncate">{a.notes || '—'}</td>
                   </tr>
                 ))}
               </tbody>

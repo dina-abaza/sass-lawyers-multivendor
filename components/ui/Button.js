@@ -11,22 +11,22 @@ export default function Button({
   onClick,
 }) {
   const base =
-    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed select-none';
 
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-    ghost: 'text-gray-600 hover:bg-gray-100 focus:ring-gray-400',
-    outline: 'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-400',
-    landing: 'bg-gradient-to-l from-violet-600 to-purple-600 text-white shadow-md shadow-purple-600/20 hover:shadow-lg hover:shadow-purple-600/30 focus:ring-purple-500',
-    'landing-outline': 'border border-purple-300 text-purple-700 hover:bg-purple-50 focus:ring-purple-400',
+    primary:  'bg-navy-700 text-white hover:bg-navy-800 focus:ring-navy-700/40 shadow-sm',
+    secondary:'bg-white text-navy-700 border border-navy-200 hover:bg-navy-50 focus:ring-navy-700/30',
+    danger:   'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500/40 shadow-sm',
+    ghost:    'text-navy-700 hover:bg-navy-50 focus:ring-navy-700/20',
+    outline:  'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-400/30',
+    landing:  'bg-gradient-to-l from-navy-800 to-navy-600 text-white shadow-md shadow-navy-700/25 hover:shadow-lg focus:ring-navy-700/40',
+    'landing-outline': 'border border-navy-300 text-navy-700 hover:bg-navy-50 focus:ring-navy-700/30',
   };
 
   const sizes = {
-    sm: 'h-8 px-3 text-sm',
-    md: 'h-10 px-4 text-sm',
-    lg: 'h-12 px-6 text-base',
+    sm: 'h-8 px-3 text-xs',
+    md: 'h-9 px-4 text-sm',
+    lg: 'h-11 px-6 text-sm',
   };
 
   return (
@@ -34,10 +34,10 @@ export default function Button({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${base} ${variants[variant] ?? variants.primary} ${sizes[size]} ${className}`}
     >
       {loading && (
-        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin flex-shrink-0" />
       )}
       {children}
     </button>

@@ -15,7 +15,7 @@ export default function CreatePaymentVoucherPage() {
   const { tenantApi } = useAuth();
   const router = useRouter();
   const [form, setForm] = useState({
-    customer_id: '', voucher_date: '', amount: '', amount_text: '',
+    customer_id: '', voucher_date: '', voucher_date_hijri: '', amount: '', amount_text: '',
     for_reason: '', notes: '', is_check: false, bank: '',
   });
   const [error, setError] = useState(null);
@@ -58,8 +58,9 @@ export default function CreatePaymentVoucherPage() {
           <Input label="المبلغ (رقماً)" name="amount" type="number" value={form.amount} onChange={handleChange} required />
           <Input label="تاريخ السند" name="voucher_date" type="date" value={form.voucher_date} onChange={handleChange} required />
         </div>
+        <Input label="التاريخ الهجري" name="voucher_date_hijri" placeholder="1447/07/07" value={form.voucher_date_hijri} onChange={handleChange} />
         <Input label="المبلغ (كتابةً)" name="amount_text" value={form.amount_text} onChange={handleChange} />
-        <Input label="الغرض من الصرف" name="for_reason" value={form.for_reason} onChange={handleChange} />
+        <Input label="سبب الصرف" name="for_reason" placeholder="مثال: مصاريف إدارية، تسوية" value={form.for_reason} onChange={handleChange} />
         <div className="flex items-center gap-2">
           <input type="checkbox" id="is_check" name="is_check" checked={form.is_check} onChange={handleChange} />
           <label htmlFor="is_check" className="text-sm text-gray-700">بشيك</label>

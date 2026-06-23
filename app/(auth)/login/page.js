@@ -57,7 +57,7 @@ export default function LoginPage() {
       />
 
       <div className="text-left">
-        <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+        <Link href="/forgot-password" className="text-sm text-navy-700 hover:underline">
           نسيت كلمة المرور؟
         </Link>
       </div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-gray-600">
         ليس لديك حساب؟{' '}
-        <Link href="/register" className="text-blue-600 font-medium hover:underline">
+        <Link href="/register" className="text-navy-700 font-medium hover:underline">
           إنشاء حساب جديد
         </Link>
       </p>

@@ -20,6 +20,103 @@ const FEATURES = [
   { key: 'has_notifications',        label: 'الإشعارات',               format: (v) => v ? 'متاح' : 'غير متاح',        isBoolean: true },
 ];
 
+const STATUS_MAP = {
+  active:    { label: 'نشط',       color: 'bg-green-100 text-green-700' },
+  trial:     { label: 'تجريبي',   color: 'bg-blue-100 text-blue-700' },
+  pending:   { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-700' },
+  expired:   { label: 'منتهي',    color: 'bg-red-100 text-red-700' },
+  cancelled: { label: 'ملغي',     color: 'bg-gray-100 text-gray-600' },
+};
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return iso.split('T')[0];
+}
+
+function CurrentSubscriptionCard({ tenantApi }) {
+  const { data: raw, isLoading } = useQuery({
+    queryKey: ['my-subscription-status'],
+    queryFn: () => subscriptionsApi.getMyStatus(tenantApi).then((r) => r.data),
+    enabled: !!tenantApi,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-6 flex justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  // استخراج البيانات بمرونة لأي شكل response
+  const statusData = raw?.data ?? raw ?? null;
+
+  if (!statusData || raw?.status === false) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-3 text-gray-400 text-sm">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        لا يوجد اشتراك نشط حالياً — اختر باقة من القائمة أدناه
+      </div>
+    );
+  }
+
+  const status = statusData.status ?? statusData.subscription_status ?? '';
+  const statusInfo = STATUS_MAP[status] ?? { label: status, color: 'bg-gray-100 text-gray-600' };
+  const planName = statusData.plan?.name ?? statusData.subscription?.name ?? statusData.name ?? '—';
+  const startDate = statusData.start_date ?? statusData.created_at ?? null;
+  const endDate = statusData.end_date ?? statusData.expires_at ?? statusData.next_billing_date ?? null;
+  const billingType = statusData.type ?? statusData.billing_type ?? null;
+  const remainingDays = statusData.remaining_days ?? statusData.days_remaining ?? null;
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+        <div>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">اشتراكي الحالي</p>
+          <h2 className="text-lg font-bold text-gray-900">{planName}</h2>
+        </div>
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+          {statusInfo.label}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {startDate && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <p className="text-xs text-gray-400 mb-1">تاريخ البدء</p>
+            <p className="text-sm font-semibold text-gray-800">{formatDate(startDate)}</p>
+          </div>
+        )}
+        {endDate && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <p className="text-xs text-gray-400 mb-1">تاريخ الانتهاء</p>
+            <p className="text-sm font-semibold text-gray-800">{formatDate(endDate)}</p>
+          </div>
+        )}
+        {billingType && (
+          <div className="bg-gray-50 rounded-lg p-3">
+            <p className="text-xs text-gray-400 mb-1">نوع الاشتراك</p>
+            <p className="text-sm font-semibold text-gray-800">
+              {billingType === 'monthly' ? 'شهري' : billingType === 'yearly' ? 'سنوي' : billingType}
+            </p>
+          </div>
+        )}
+        {remainingDays !== null && remainingDays !== undefined && (
+          <div className={`rounded-lg p-3 ${remainingDays <= 7 ? 'bg-red-50' : 'bg-blue-50'}`}>
+            <p className={`text-xs mb-1 ${remainingDays <= 7 ? 'text-red-400' : 'text-blue-400'}`}>الأيام المتبقية</p>
+            <p className={`text-sm font-semibold ${remainingDays <= 7 ? 'text-red-700' : 'text-blue-700'}`}>
+              {remainingDays} يوم
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SubscriptionsPage() {
   const { tenantApi } = useAuth();
   const [billingType, setBillingType] = useState('monthly');
@@ -60,32 +157,38 @@ export default function SubscriptionsPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">الباقات المتاحة</h1>
-        <p className="text-gray-500 mt-1">اختر الباقة المناسبة لمكتبك للوصول إلى جميع مميزات النظام</p>
+        <h1 className="text-2xl font-bold text-gray-900">الاشتراكات</h1>
+        <p className="text-gray-500 mt-1">إدارة اشتراكك ومعرفة الباقات المتاحة</p>
       </div>
 
+      {/* الاشتراك الحالي */}
+      <CurrentSubscriptionCard tenantApi={tenantApi} />
+
       {/* Billing toggle */}
-      <div className="inline-flex items-center bg-gray-100 rounded-lg p-1 gap-1">
-        <button
-          onClick={() => setBillingType('monthly')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            billingType === 'monthly'
-              ? 'bg-white shadow text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          اشتراك شهري
-        </button>
-        <button
-          onClick={() => setBillingType('yearly')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            billingType === 'yearly'
-              ? 'bg-white shadow text-blue-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          اشتراك سنوي
-        </button>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-lg font-semibold text-gray-800">الباقات المتاحة</h2>
+        <div className="inline-flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+          <button
+            onClick={() => setBillingType('monthly')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              billingType === 'monthly'
+                ? 'bg-white shadow text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            شهري
+          </button>
+          <button
+            onClick={() => setBillingType('yearly')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              billingType === 'yearly'
+                ? 'bg-white shadow text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            سنوي
+          </button>
+        </div>
       </div>
 
       {/* Feedback messages */}
@@ -120,7 +223,6 @@ export default function SubscriptionsPage() {
                 key={plan.id}
                 className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col gap-5 hover:shadow-md transition-shadow"
               >
-                {/* Plan name & price */}
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">{plan.name}</h2>
                   <p className="text-3xl font-bold text-blue-600 mt-2">
@@ -136,7 +238,6 @@ export default function SubscriptionsPage() {
                   )}
                 </div>
 
-                {/* Features list */}
                 <ul className="space-y-2 flex-1">
                   {FEATURES.map((f) => {
                     const val = plan[f.key];
@@ -153,7 +254,6 @@ export default function SubscriptionsPage() {
                   })}
                 </ul>
 
-                {/* CTA */}
                 <button
                   onClick={() => handleRequest(plan.id)}
                   disabled={isRequesting}
@@ -167,7 +267,6 @@ export default function SubscriptionsPage() {
         </div>
       )}
 
-      {/* Help note */}
       <p className="text-xs text-gray-400 text-center">
         بعد اختيار الباقة، سيتم مراجعة طلبك من قِبل الإدارة وتفعيل اشتراكك في أقرب وقت.
       </p>

@@ -21,7 +21,10 @@ export default function InvoicesPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">فواتير القضايا</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">فواتير القضايا</h1>
+          <p className="text-sm text-gray-500 mt-0.5">أتعاب المحامي عن قضايا العملاء في المحاكم</p>
+        </div>
         <Link href="/finance/invoices/create"><Button>+ فاتورة جديدة</Button></Link>
       </div>
 
@@ -36,7 +39,11 @@ export default function InvoicesPage() {
               <tr>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">#</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">القضية</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الموضوع</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الجهة</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">المبلغ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الضريبة</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">الإجمالي</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">التاريخ</th>
               </tr>
             </thead>
@@ -45,7 +52,11 @@ export default function InvoicesPage() {
                 <tr key={inv.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-500">{inv.id}</td>
                   <td className="px-4 py-3 text-gray-900">{inv.case?.case_number || inv.case_id}</td>
-                  <td className="px-4 py-3 text-gray-900 font-medium">{inv.amount?.toLocaleString()} ر.س</td>
+                  <td className="px-4 py-3 text-gray-600">{inv.case?.subject || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600">{inv.case?.agency || '—'}</td>
+                  <td className="px-4 py-3 text-gray-900 font-medium">{Number(inv.amount).toLocaleString()} ر.س</td>
+                  <td className="px-4 py-3 text-gray-600">{Number(inv.tax_value).toLocaleString()} ر.س <span className="text-xs text-gray-400">({inv.tax_rate}%)</span></td>
+                  <td className="px-4 py-3 font-bold text-blue-700">{Number(inv.total_amount).toLocaleString()} ر.س</td>
                   <td className="px-4 py-3 text-gray-600">{inv.created_at?.substring(0, 10)}</td>
                 </tr>
               ))}

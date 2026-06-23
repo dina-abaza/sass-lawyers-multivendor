@@ -73,7 +73,7 @@ export default function RegisterPage() {
 
       <p className="text-center text-sm text-gray-600">
         لديك حساب بالفعل؟{' '}
-        <Link href="/login" className="text-blue-600 font-medium hover:underline">
+        <Link href="/login" className="text-navy-700 font-medium hover:underline">
           تسجيل الدخول
         </Link>
       </p>

@@ -44,6 +44,7 @@ export default function ReceiptsPage() {
                 <th className="px-4 py-3 text-right font-medium text-gray-600">المبلغ</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">السبب</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-600">التاريخ</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600">بشيك</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
@@ -54,7 +55,10 @@ export default function ReceiptsPage() {
                   <td className="px-4 py-3 font-medium text-green-700">{r.amount?.toLocaleString()} ر.س</td>
                   <td className="px-4 py-3 text-gray-600">{r.for_reason}</td>
                   <td className="px-4 py-3 text-gray-600">{r.receipt_date}</td>
-                  <td className="px-4 py-3 text-left">
+                  <td className="px-4 py-3">{r.is_check ? '✓' : '-'}</td>
+                  <td className="px-4 py-3 text-left flex gap-3">
+                    <Link href={`/finance/receipts/${r.id}/edit`}
+                      className="text-blue-600 hover:text-blue-800 text-xs">تعديل</Link>
                     <button onClick={() => { if (confirm('حذف؟')) deleteMutation.mutate(r.id); }}
                       className="text-red-600 hover:text-red-800 text-xs">حذف</button>
                   </td>

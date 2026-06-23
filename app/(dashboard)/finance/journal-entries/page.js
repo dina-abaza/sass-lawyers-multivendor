@@ -1,9 +1,11 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { accountsApi } from '@/lib/api';
 import Spinner from '@/components/common/Spinner';
+import Button from '@/components/ui/Button';
 
 export default function JournalEntriesPage() {
   const { tenantApi } = useAuth();
@@ -24,7 +26,10 @@ export default function JournalEntriesPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">القيود اليومية</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">القيود اليومية</h1>
+        <Link href="/finance/journal-entries/create"><Button>+ قيد يدوي جديد</Button></Link>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
@@ -46,6 +51,7 @@ export default function JournalEntriesPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-3 py-1.5 text-right font-medium text-gray-600">الحساب</th>
+                    <th className="px-3 py-1.5 text-right font-medium text-gray-600">البيان</th>
                     <th className="px-3 py-1.5 text-right font-medium text-gray-600">مدين</th>
                     <th className="px-3 py-1.5 text-right font-medium text-gray-600">دائن</th>
                   </tr>
@@ -54,8 +60,9 @@ export default function JournalEntriesPage() {
                   {(entry.items || []).map((item, i) => (
                     <tr key={i} className="border-t border-gray-100">
                       <td className="px-3 py-1.5 text-gray-900">{item.account?.name || item.account_id}</td>
-                      <td className="px-3 py-1.5 text-gray-700">{item.debit ? item.debit.toLocaleString() : '—'}</td>
-                      <td className="px-3 py-1.5 text-gray-700">{item.credit ? item.credit.toLocaleString() : '—'}</td>
+                      <td className="px-3 py-1.5 text-gray-500 text-xs">{item.description || '—'}</td>
+                      <td className="px-3 py-1.5 text-gray-700">{Number(item.debit) > 0 ? Number(item.debit).toLocaleString() : '—'}</td>
+                      <td className="px-3 py-1.5 text-gray-700">{Number(item.credit) > 0 ? Number(item.credit).toLocaleString() : '—'}</td>
                     </tr>
                   ))}
                 </tbody>

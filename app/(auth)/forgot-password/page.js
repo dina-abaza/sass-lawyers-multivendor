@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
       </Button>
 
       <p className="text-center text-sm">
-        <Link href="/login" className="text-blue-600 hover:underline">
+        <Link href="/login" className="text-navy-700 hover:underline">
           العودة لتسجيل الدخول
         </Link>
       </p>

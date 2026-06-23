@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '@/context/AuthContext';
@@ -16,6 +16,7 @@ const MAX_LOGO_SIZE_BYTES = MAX_LOGO_SIZE_MB * 1024 * 1024;
 
 export default function InvoiceSettingsPage() {
   const { tenantApi } = useAuth();
+  const qc = useQueryClient();
   const [form, setForm] = useState(EMPTY_FORM);
   const [logo, setLogo] = useState(null);
   const fileInputRef = useRef(null);
@@ -48,9 +49,9 @@ export default function InvoiceSettingsPage() {
     },
     onSuccess: () => {
       toast.success('تم حفظ الإعدادات بنجاح');
-      setForm(EMPTY_FORM);
       setLogo(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+      qc.invalidateQueries({ queryKey: ['invoice-settings'] });
     },
     onError: () => toast.error('حدث خطأ أثناء الحفظ، يرجى المحاولة مرة أخرى'),
   });

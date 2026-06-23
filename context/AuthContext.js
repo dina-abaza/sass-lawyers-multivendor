@@ -64,8 +64,24 @@ export function AuthProvider({ children }) {
   const isLawyer = roles.includes('lawyer');
   const hasRole = (role) => roles.includes(role);
 
+  const updateUser = useCallback((updatedData) => {
+    const merged = { ...user, ...updatedData };
+    localStorage.setItem('auth_user', JSON.stringify(merged));
+    setUser(merged);
+  }, [user]);
+
+  const isOwner = roles.includes('owner');
+
+  // Owner و super_admin عندهم كل الصلاحيات تلقائياً
+  const hasPermission = useCallback((permission) => {
+    if (!permission) return true;
+    if (isSuperAdmin || isOwner) return true;
+    const perms = user?.all_permissions ?? [];
+    return perms.includes(permission);
+  }, [user, isSuperAdmin, isOwner]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, tenantApi, isSuperAdmin, isAdmin, isLawyer, hasRole, roles }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, tenantApi, isSuperAdmin, isAdmin, isLawyer, isOwner, hasRole, hasPermission, roles, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
