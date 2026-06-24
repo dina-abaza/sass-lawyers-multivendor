@@ -6,6 +6,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { invoicesApi, contractsApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -22,7 +24,7 @@ export default function CreateContractInvoicePage() {
   const [invoiceResult, setInvoiceResult] = useState(null);
 
   const { data: contracts } = useQuery({
-    queryKey: ['contracts-list'],
+    queryKey: [QUERY_KEYS.CONTRACTS],
     queryFn: () => contractsApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -41,11 +43,6 @@ export default function CreateContractInvoicePage() {
   });
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name || x.contract_number }));
-  }
 
   if (invoiceResult) {
     const inv = invoiceResult.invoiceDetails;
@@ -101,7 +98,7 @@ export default function CreateContractInvoicePage() {
       <form onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(form); }}
         className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
         <ErrorMessage error={error} />
-        <Select label="العقد" name="contract_id" value={form.contract_id} onChange={handleChange} options={toOptions(contracts)} required />
+        <Select label="العقد" name="contract_id" value={form.contract_id} onChange={handleChange} options={toOptions(contracts, (x) => x.name || x.contract_number)} required />
         <Input label="المبلغ" name="amount" type="number" value={form.amount} onChange={handleChange} required />
         <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 text-sm text-blue-700">
           سيتم احتساب الضريبة تلقائياً وفق إعدادات المكتب.

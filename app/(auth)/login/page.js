@@ -5,24 +5,31 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import ErrorMessage from '@/components/common/ErrorMessage';
+
+function loginErrorMsg(err) {
+  if (!err?.response) return 'تعذر الاتصال بالخادم، تحقق من الإنترنت';
+  if (err.response.status === 401) return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+  if (err.response.status === 403) return 'الحساب موقوف، تواصل مع الإدارة';
+  if (err.response.status === 429) return 'محاولات كثيرة، انتظر قليلاً ثم حاول مرة أخرى';
+  return 'حدث خطأ، يرجى المحاولة مرة أخرى';
+}
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
     try {
       await login(form.email, form.password);
     } catch (err) {
-      setError(err);
+      setError(loginErrorMsg(err));
     } finally {
       setLoading(false);
     }
@@ -33,7 +40,11 @@ export default function LoginPage() {
       <h2 className="text-xl font-bold text-gray-900 mb-1">تسجيل الدخول</h2>
       <p className="text-sm text-gray-500 mb-4">أدخل بياناتك للوصول إلى النظام</p>
 
-      <ErrorMessage error={error} />
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <Input
         label="البريد الإلكتروني"

@@ -6,20 +6,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { tasksApi, employeesApi, casesApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS, TASK_TYPE_OPTIONS, TASK_STATUS_OPTIONS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
-
-const TASK_TYPES = [
-  { value: 'internal', label: 'داخلية' },
-  { value: 'external', label: 'خارجية' },
-];
-const TASK_STATUSES = [
-  { value: 'active',    label: 'نشطة' },
-  { value: 'completed', label: 'مكتملة' },
-  { value: 'archived',  label: 'مؤرشفة' },
-];
 
 export default function CreateTaskPage() {
   const { tenantApi } = useAuth();
@@ -31,12 +23,12 @@ export default function CreateTaskPage() {
   const [error, setError] = useState(null);
 
   const { data: employees } = useQuery({
-    queryKey: ['employees-list'],
+    queryKey: [QUERY_KEYS.EMPLOYEES],
     queryFn: () => employeesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
   const { data: cases } = useQuery({
-    queryKey: ['cases-list'],
+    queryKey: [QUERY_KEYS.CASES],
     queryFn: () => casesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -48,11 +40,6 @@ export default function CreateTaskPage() {
   });
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  function toOptions(raw, labelFn) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: labelFn(x) }));
-  }
 
   return (
     <div className="p-6 max-w-2xl">
@@ -76,9 +63,9 @@ export default function CreateTaskPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select label="النوع" name="type" value={form.type} onChange={handleChange}
-            options={TASK_TYPES} required />
+            options={TASK_TYPE_OPTIONS} required />
           <Select label="الحالة" name="status" value={form.status} onChange={handleChange}
-            options={TASK_STATUSES} required />
+            options={TASK_STATUS_OPTIONS} required />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -4,6 +4,15 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { useRouter } from 'next/navigation';
 import { centralApi, getTenantApi } from '@/lib/api';
 
+function getSubdomain() {
+  if (typeof window === 'undefined') return null;
+  const parts = window.location.hostname.split('.');
+  if (parts.length >= 2 && parts[0] !== 'localhost' && parts[0] !== 'www') {
+    return parts[0];
+  }
+  return null;
+}
+
 const AuthContext = createContext(null);
 
 function extractRoleNames(userData) {
@@ -33,22 +42,60 @@ export function AuthProvider({ children }) {
     const { data } = await centralApi.post('/login', { email, password });
     const token = data.token || data.access_token;
     const userData = data.user || data.data;
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('auth_user', JSON.stringify(userData));
-    setUser(userData);
 
     const roles = extractRoleNames(userData);
+
     if (roles.includes('super_admin')) {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+      setUser(userData);
       router.replace('/admin/dashboard');
+      return data;
+    }
+
+    const tenantId = userData?.tenant_id;
+
+    if (tenantId) {
+      const currentSubdomain = getSubdomain();
+
+      if (currentSubdomain === String(tenantId)) {
+        // Already on the correct subdomain — store and enter
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('auth_user', JSON.stringify(userData));
+        setUser(userData);
+        router.replace('/dashboard');
+      } else {
+        // Redirect to tenant subdomain, pass token via URL
+        const protocol = window.location.protocol;
+        const hostWithoutPort = window.location.hostname;
+        const port = window.location.port ? `:${window.location.port}` : '';
+
+        // Build base domain (strip existing subdomain if any)
+        const hostParts = hostWithoutPort.split('.');
+        const baseDomain =
+          hostParts.length >= 2 && hostParts[0] !== 'localhost'
+            ? hostParts.slice(1).join('.')
+            : hostWithoutPort;
+
+        const tenantHost = `${tenantId}.${baseDomain}${port}`;
+        const encodedToken = encodeURIComponent(token);
+        const encodedUser = encodeURIComponent(JSON.stringify(userData));
+        window.location.href = `${protocol}//${tenantHost}/auth-redirect?token=${encodedToken}&user=${encodedUser}`;
+      }
     } else {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+      setUser(userData);
       router.replace('/dashboard');
     }
+
     return data;
   }, [router]);
 
   const logout = useCallback(async () => {
     try {
-      const api = user?.tenant_id ? getTenantApi(user.tenant_id) : centralApi;
+      const logoutTenantId = getSubdomain() || user?.tenant_id;
+      const api = logoutTenantId ? getTenantApi(logoutTenantId) : centralApi;
       await api.post('/logout');
     } catch {}
     localStorage.removeItem('auth_token');
@@ -57,7 +104,8 @@ export function AuthProvider({ children }) {
     router.push('/login');
   }, [user, router]);
 
-  const tenantApi = user?.tenant_id ? getTenantApi(user.tenant_id) : centralApi;
+  const tenantId = getSubdomain() || user?.tenant_id;
+  const tenantApi = tenantId ? getTenantApi(tenantId) : centralApi;
   const roles = extractRoleNames(user);
   const isSuperAdmin = roles.includes('super_admin');
   const isAdmin = roles.includes('admin') || isSuperAdmin;

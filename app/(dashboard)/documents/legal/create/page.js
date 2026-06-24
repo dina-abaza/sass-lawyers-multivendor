@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
 import { legalDocsApi, customersApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS, LEGAL_DOC_TYPE_OPTIONS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -14,17 +16,6 @@ import ErrorMessage from '@/components/common/ErrorMessage';
 
 const MAX_FILE_MB = 5;
 const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
-
-const DOC_TYPE_OPTIONS = [
-  { value: 'general_agency',  label: 'وكالة عامة' },
-  { value: 'special_agency',  label: 'وكالة خاصة' },
-  { value: 'periodic_agency', label: 'وكالة دورية - عدلية' },
-  { value: 'declaration',     label: 'إقرار' },
-  { value: 'debt_settlement', label: 'سداد دين' },
-  { value: 'legal_pledge',    label: 'تعهد عدلي' },
-  { value: 'ownership_deed',  label: 'صك ملكية' },
-  { value: 'other',           label: 'أخرى' },
-];
 
 export default function CreateLegalDocPage() {
   const { tenantApi } = useAuth();
@@ -37,7 +28,7 @@ export default function CreateLegalDocPage() {
   const [error, setError] = useState(null);
 
   const { data: customers } = useQuery({
-    queryKey: ['customers-list'],
+    queryKey: [QUERY_KEYS.CUSTOMERS],
     queryFn: () => customersApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -70,11 +61,6 @@ export default function CreateLegalDocPage() {
     setFiles(selected);
   };
 
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
-
   return (
     <div className="p-6 max-w-xl">
       <ToastContainer position="top-right" rtl autoClose={5000} />
@@ -90,7 +76,7 @@ export default function CreateLegalDocPage() {
         <Select label="العميل" name="customer_id" value={form.customer_id} onChange={handleChange}
           options={toOptions(customers)} required />
         <Select label="نوع المستند" name="document_type" value={form.document_type} onChange={handleChange}
-          options={DOC_TYPE_OPTIONS} required />
+          options={LEGAL_DOC_TYPE_OPTIONS} required />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="رقم المستند" name="document_number" value={form.document_number}

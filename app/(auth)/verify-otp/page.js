@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { centralApi } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import ErrorMessage from '@/components/common/ErrorMessage';
 import Spinner from '@/components/common/Spinner';
 
 function VerifyOtpForm() {
@@ -14,17 +13,21 @@ function VerifyOtpForm() {
   const email = searchParams.get('email') || '';
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
     try {
       await centralApi.post('/verify-otp', { email, otp });
       router.push(`/reset-password?email=${encodeURIComponent(email)}&otp=${otp}`);
     } catch (err) {
-      setError(err);
+      if (!err?.response) {
+        setError('تعذر الاتصال بالخادم، تحقق من الإنترنت');
+      } else {
+        setError('رمز التحقق غير صحيح أو منتهي الصلاحية');
+      }
     } finally {
       setLoading(false);
     }
@@ -38,7 +41,11 @@ function VerifyOtpForm() {
         <span className="font-medium text-gray-800">{email}</span>
       </p>
 
-      <ErrorMessage error={error} />
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <Input
         label="رمز التحقق"

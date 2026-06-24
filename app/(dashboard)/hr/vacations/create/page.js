@@ -6,6 +6,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { vacationsApi, employeesApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -18,7 +20,7 @@ export default function CreateVacationPage() {
   const [error, setError] = useState(null);
 
   const { data: employees } = useQuery({
-    queryKey: ['employees-list'],
+    queryKey: [QUERY_KEYS.EMPLOYEES],
     queryFn: () => employeesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -30,11 +32,6 @@ export default function CreateVacationPage() {
   });
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
 
   return (
     <div className="p-6 max-w-md">

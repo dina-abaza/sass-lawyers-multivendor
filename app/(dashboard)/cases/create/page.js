@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { casesApi, customersApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
@@ -31,23 +34,23 @@ export default function CreateCasePage() {
   const [error, setError] = useState(null);
 
   const { data: customers } = useQuery({
-    queryKey: ['customers-list'],
-    queryFn: () => tenantApi.get('/customers').then((r) => r.data),
+    queryKey: [QUERY_KEYS.CUSTOMERS],
+    queryFn: () => customersApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
   const { data: statuses } = useQuery({
-    queryKey: ['case-statuses'],
-    queryFn: () => tenantApi.get('/case-statuses').then((r) => r.data),
+    queryKey: [QUERY_KEYS.CASE_STATUSES],
+    queryFn: () => casesApi.getStatuses(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
   const { data: lawyers } = useQuery({
-    queryKey: ['lawyers'],
-    queryFn: () => tenantApi.get('/lawyers').then((r) => r.data),
+    queryKey: [QUERY_KEYS.LAWYERS],
+    queryFn: () => casesApi.getLawyers(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
   const mutation = useMutation({
-    mutationFn: (data) => tenantApi.post('/cases', data),
+    mutationFn: (data) => casesApi.create(tenantApi, data),
     onSuccess: () => router.push('/cases'),
     onError: setError,
   });
@@ -57,15 +60,8 @@ export default function CreateCasePage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
-    console.log('📋 القيم المُرسلة للسيرفر:', form);
     mutation.mutate(form);
   };
-
-  function toOptions(arr) {
-    if (!arr) return [];
-    const list = Array.isArray(arr) ? arr : arr?.data ?? [];
-    return list.map((item) => ({ value: item.id, label: item.name || item.case_number }));
-  }
 
   return (
     <div className="p-6 max-w-3xl">
@@ -90,7 +86,7 @@ export default function CreateCasePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select label="العميل" name="customer_id" value={form.customer_id} onChange={handleChange} options={toOptions(customers)} required />
-          <Select label="المحامي" name="lawyer_id" value={form.lawyer_id} onChange={handleChange} options={toOptions(lawyers?.data ?? lawyers)} />
+          <Select label="المحامي" name="lawyer_id" value={form.lawyer_id} onChange={handleChange} options={toOptions(lawyers)} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

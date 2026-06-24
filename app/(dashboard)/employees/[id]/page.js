@@ -4,7 +4,8 @@ import { use, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { rolesApi } from '@/lib/api';
+import { rolesApi, employeesApi, departmentsApi } from '@/lib/api';
+import { QUERY_KEYS } from '@/lib/constants';
 import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -32,7 +33,7 @@ export default function EmployeeDetailPage({ params }) {
   // بيانات الموظف
   const { data: employee, isLoading } = useQuery({
     queryKey: ['employee', id],
-    queryFn: () => tenantApi.get(`/employees/${id}`).then((r) => r.data),
+    queryFn: () => employeesApi.getById(tenantApi, id).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
@@ -53,24 +54,24 @@ export default function EmployeeDetailPage({ params }) {
 
   // قائمة الأدوار المتاحة من الـ API
   const { data: rolesData, isLoading: loadingRoles } = useQuery({
-    queryKey: ['roles'],
+    queryKey: [QUERY_KEYS.ROLES],
     queryFn: () => rolesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
   // الأقسام (عند التعديل فقط)
   const { data: departments } = useQuery({
-    queryKey: ['departments'],
-    queryFn: () => tenantApi.get('/departments').then((r) => r.data),
+    queryKey: [QUERY_KEYS.DEPARTMENTS],
+    queryFn: () => departmentsApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi && editing,
   });
 
   // تحديث بيانات الموظف
   const updateMutation = useMutation({
-    mutationFn: (data) => tenantApi.put(`/employees/${id}`, data),
+    mutationFn: (data) => employeesApi.update(tenantApi, id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['employee', id] });
-      qc.invalidateQueries({ queryKey: ['employees'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.EMPLOYEES] });
       setEditing(false);
     },
     onError: setError,
@@ -81,7 +82,7 @@ export default function EmployeeDetailPage({ params }) {
     mutationFn: (role) => tenantApi.put(`/admin/users/${userId}`, { roles: [role] }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['employee-user', userId] });
-      qc.invalidateQueries({ queryKey: ['lawyers'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.LAWYERS] });
       setRoleError(null);
     },
     onError: setRoleError,

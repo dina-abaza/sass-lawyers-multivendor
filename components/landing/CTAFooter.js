@@ -34,7 +34,7 @@ export default function CTAFooter() {
           </p>
           <Link href="/register"
             className="mt-8 inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-navy-900 bg-white hover:bg-navy-50 shadow-lg transition-all">
-            جرب مجاناً 14 يوم
+            جرب مجاناً 30 يوم
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>

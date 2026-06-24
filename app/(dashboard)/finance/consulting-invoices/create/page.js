@@ -6,6 +6,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { invoicesApi, consultationsApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -19,7 +21,7 @@ export default function CreateConsultingInvoicePage() {
   const [invoiceResult, setInvoiceResult] = useState(null);
 
   const { data: consultations } = useQuery({
-    queryKey: ['consultations-list'],
+    queryKey: [QUERY_KEYS.CONSULTATIONS],
     queryFn: () => consultationsApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -38,11 +40,6 @@ export default function CreateConsultingInvoicePage() {
   });
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.subject || x.id }));
-  }
 
   if (invoiceResult) {
     const inv = invoiceResult.invoiceDetails;
@@ -98,7 +95,7 @@ export default function CreateConsultingInvoicePage() {
       <form onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(form); }}
         className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
         <ErrorMessage error={error} />
-        <Select label="الاستشارة" name="consultation_id" value={form.consultation_id} onChange={handleChange} options={toOptions(consultations)} required />
+        <Select label="الاستشارة" name="consultation_id" value={form.consultation_id} onChange={handleChange} options={toOptions(consultations, (x) => x.subject || String(x.id))} required />
         <Input label="المبلغ" name="amount" type="number" value={form.amount} onChange={handleChange} required />
         <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 text-sm text-blue-700">
           سيتم احتساب الضريبة تلقائياً وفق إعدادات المكتب.

@@ -5,17 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { rolesApi } from '@/lib/api';
+import { rolesApi, departmentsApi } from '@/lib/api';
+import { QUERY_KEYS, PAYMENT_METHOD_OPTIONS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
-
-const PAYMENT_OPTIONS = [
-  { value: 'cash',   label: 'نقداً' },
-  { value: 'bank',   label: 'تحويل بنكي' },
-  { value: 'wallet', label: 'محفظة إلكترونية' },
-];
 
 // أدوار النظام الأساسية لا تُعطى للموظفين
 const EXCLUDED_ROLES = ['super_admin', 'owner'];
@@ -35,13 +30,13 @@ export default function CreateEmployeePage() {
   const [error, setError] = useState(null);
 
   const { data: departments } = useQuery({
-    queryKey: ['departments'],
-    queryFn: () => tenantApi.get('/departments').then((r) => r.data),
+    queryKey: [QUERY_KEYS.DEPARTMENTS],
+    queryFn: () => departmentsApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
   const { data: rolesData, isLoading: loadingRoles } = useQuery({
-    queryKey: ['roles'],
+    queryKey: [QUERY_KEYS.ROLES],
     queryFn: () => rolesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -145,7 +140,7 @@ export default function CreateEmployeePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="الراتب الشهري (ر.س)" name="amount" type="number" value={form.amount} onChange={handleChange} required />
-          <Select label="طريقة الصرف" name="payment_method" value={form.payment_method} onChange={handleChange} options={PAYMENT_OPTIONS} required />
+          <Select label="طريقة الصرف" name="payment_method" value={form.payment_method} onChange={handleChange} options={PAYMENT_METHOD_OPTIONS} required />
         </div>
 
         <div className="flex flex-col gap-1">

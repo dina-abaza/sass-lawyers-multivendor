@@ -4,15 +4,14 @@ import { use, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { customersApi } from '@/lib/api';
+import { GENDER_OPTIONS, CUSTOMER_TYPE_OPTIONS, CUSTOMER_STATUS_OPTIONS } from '@/lib/constants';
 import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import ErrorMessage from '@/components/common/ErrorMessage';
-
-const GENDER_OPTIONS = [{ value: 'male', label: 'ذكر' }, { value: 'female', label: 'أنثى' }];
-const TYPE_OPTIONS = [{ value: 'individual', label: 'فرد' }, { value: 'company', label: 'شركة' }];
 
 export default function CustomerDetailPage({ params }) {
   const { id } = use(params);
@@ -24,13 +23,13 @@ export default function CustomerDetailPage({ params }) {
 
   const { data: customer, isLoading } = useQuery({
     queryKey: ['customer', id],
-    queryFn: () => tenantApi.get(`/customers/${id}`).then((r) => r.data),
+    queryFn: () => customersApi.getById(tenantApi, id).then((r) => r.data),
     enabled: !!tenantApi,
     onSuccess: (d) => setForm(d),
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data) => tenantApi.post(`/customers/${id}`, data),
+    mutationFn: (data) => customersApi.update(tenantApi, id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['customer', id] });
       qc.invalidateQueries({ queryKey: ['customers'] });
@@ -85,10 +84,13 @@ export default function CustomerDetailPage({ params }) {
               <Input label="البريد" name="email" type="email" value={form?.email || ''} onChange={handleChange} dir="ltr" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Select label="النوع" name="customer_type" value={form?.customer_type || ''} onChange={handleChange} options={TYPE_OPTIONS} />
+              <Select label="النوع" name="customer_type" value={form?.customer_type || ''} onChange={handleChange} options={CUSTOMER_TYPE_OPTIONS} />
               <Select label="الجنس" name="gender" value={form?.gender || ''} onChange={handleChange} options={GENDER_OPTIONS} />
             </div>
-            <Input label="العنوان" name="address" value={form?.address || ''} onChange={handleChange} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Select label="الحالة" name="status" value={form?.status || ''} onChange={handleChange} options={CUSTOMER_STATUS_OPTIONS} />
+              <Input label="العنوان" name="address" value={form?.address || ''} onChange={handleChange} />
+            </div>
             <Textarea label="ملاحظات" name="notes" value={form?.notes || ''} onChange={handleChange} />
             <div className="flex gap-3">
               <Button type="submit" loading={updateMutation.isPending}>حفظ التغييرات</Button>
@@ -106,7 +108,7 @@ export default function CustomerDetailPage({ params }) {
               { label: 'الجنس', value: customer.gender === 'male' ? 'ذكر' : customer.gender === 'female' ? 'أنثى' : null },
               { label: 'النوع', value: customer.customer_type === 'individual' ? 'فرد' : customer.customer_type === 'company' ? 'شركة' : null },
               { label: 'العنوان', value: customer.address },
-              { label: 'الحالة', value: customer.status },
+              { label: 'الحالة', value: customer.status === 'active' ? 'نشط' : customer.status === 'not_active' ? 'غير نشط' : null },
               { label: 'ملاحظات', value: customer.notes },
             ].map(({ label, value }) => (
               <div key={label}>

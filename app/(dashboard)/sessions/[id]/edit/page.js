@@ -6,6 +6,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { sessionsApi, casesApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -26,17 +28,17 @@ export default function EditSessionPage() {
     enabled: !!tenantApi && !!id,
   });
   const { data: cases } = useQuery({
-    queryKey: ['cases-list'],
+    queryKey: [QUERY_KEYS.CASES],
     queryFn: () => casesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
   const { data: statuses } = useQuery({
-    queryKey: ['case-statuses'],
+    queryKey: [QUERY_KEYS.CASE_STATUSES],
     queryFn: () => casesApi.getStatuses(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
   const { data: lawyers } = useQuery({
-    queryKey: ['lawyers-list'],
+    queryKey: [QUERY_KEYS.LAWYERS],
     queryFn: () => casesApi.getLawyers(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -73,19 +75,6 @@ export default function EditSessionPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  function toCaseOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.case_number || `#${x.id}` }));
-  }
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name || x.id }));
-  }
-  function toLawyerOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
-
   if (isLoading || !form) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
@@ -102,8 +91,8 @@ export default function EditSessionPage() {
         <ErrorMessage error={error} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select label="القضية" name="case_id" value={String(form.case_id)} onChange={handleChange} options={toCaseOptions(cases)} required />
-          <Select label="المحامي" name="user_id" value={String(form.user_id)} onChange={handleChange} options={toLawyerOptions(lawyers)} required />
+          <Select label="القضية" name="case_id" value={String(form.case_id)} onChange={handleChange} options={toOptions(cases, (x) => x.case_number || `#${x.id}`)} required />
+          <Select label="المحامي" name="user_id" value={String(form.user_id)} onChange={handleChange} options={toOptions(lawyers)} required />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

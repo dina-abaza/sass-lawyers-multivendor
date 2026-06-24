@@ -5,6 +5,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { casesApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Spinner from '@/components/common/Spinner';
 import ErrorMessage from '@/components/common/ErrorMessage';
 import Button from '@/components/ui/Button';
@@ -29,8 +32,8 @@ export default function CaseDetailPage({ params }) {
   });
 
   const { data: statuses } = useQuery({
-    queryKey: ['case-statuses'],
-    queryFn: () => tenantApi.get('/case-statuses').then((r) => r.data),
+    queryKey: [QUERY_KEYS.CASE_STATUSES],
+    queryFn: () => casesApi.getStatuses(tenantApi).then((r) => r.data),
     enabled: !!tenantApi && editing,
   });
 
@@ -50,11 +53,6 @@ export default function CaseDetailPage({ params }) {
   if (!legalCase) return null;
 
   const displayCase = form || legalCase;
-
-  function toOptions(arr) {
-    const list = Array.isArray(arr) ? arr : arr?.data ?? [];
-    return list.map((item) => ({ value: item.id, label: item.name }));
-  }
 
   return (
     <div className="p-6 max-w-3xl space-y-4">

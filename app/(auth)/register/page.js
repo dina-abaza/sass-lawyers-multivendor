@@ -6,7 +6,25 @@ import { useRouter } from 'next/navigation';
 import { centralApi } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import ErrorMessage from '@/components/common/ErrorMessage';
+
+function registerErrorMsg(err) {
+  if (!err?.response) return 'تعذر الاتصال بالخادم، تحقق من الإنترنت';
+  const errors = err.response?.data?.errors;
+  if (errors) {
+    if (errors.name)        return 'الاسم الكامل مطلوب';
+    if (errors.email)       return 'البريد الإلكتروني مستخدم مسبقاً أو غير صحيح';
+    if (errors.tenant_name) return 'اسم المكتب مستخدم مسبقاً أو يحتوي على أحرف غير مسموحة';
+    if (errors.password_confirmation) return 'كلمة المرور وتأكيدها غير متطابقتين';
+    if (errors.password) {
+      const msg = Array.isArray(errors.password) ? errors.password[0] : errors.password;
+      if (typeof msg === 'string' && (msg.includes('confirmation') || msg.includes('match')))
+        return 'كلمة المرور وتأكيدها غير متطابقتين';
+      return 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+    }
+  }
+  if (err.response.status === 429) return 'محاولات كثيرة، انتظر قليلاً ثم حاول مرة أخرى';
+  return 'حدث خطأ، يرجى المحاولة مرة أخرى';
+}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,7 +36,7 @@ export default function RegisterPage() {
     tenant_name: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -26,12 +44,12 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
     try {
       await centralApi.post('/register', form);
       setSuccess(true);
     } catch (err) {
-      setError(err);
+      setError(registerErrorMsg(err));
     } finally {
       setLoading(false);
     }
@@ -59,7 +77,11 @@ export default function RegisterPage() {
       <h2 className="text-xl font-bold text-gray-900">إنشاء حساب جديد</h2>
       <p className="text-sm text-gray-500">سجّل مكتب محاماتك</p>
 
-      <ErrorMessage error={error} />
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       <Input label="الاسم الكامل" name="name" placeholder="أحمد محمد" value={form.name} onChange={handleChange} required />
       <Input label="البريد الإلكتروني" name="email" type="email" placeholder="example@domain.com" value={form.email} onChange={handleChange} required dir="ltr" />

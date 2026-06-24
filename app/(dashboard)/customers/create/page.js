@@ -5,21 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { customersApi } from '@/lib/api';
+import { GENDER_OPTIONS, CUSTOMER_TYPE_OPTIONS, CUSTOMER_STATUS_OPTIONS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
-
-const GENDER_OPTIONS = [
-  { value: 'male', label: 'ذكر' },
-  { value: 'female', label: 'أنثى' },
-];
-
-const TYPE_OPTIONS = [
-  { value: 'individual', label: 'فرد' },
-  { value: 'company', label: 'شركة' },
-];
 
 export default function CreateCustomerPage() {
   const { tenantApi } = useAuth();
@@ -41,7 +33,7 @@ export default function CreateCustomerPage() {
   const [error, setError] = useState(null);
 
   const mutation = useMutation({
-    mutationFn: (data) => tenantApi.post('/customers', data),
+    mutationFn: (data) => customersApi.create(tenantApi, data),
     onSuccess: () => router.push('/customers'),
     onError: setError,
   });
@@ -86,9 +78,11 @@ export default function CreateCustomerPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select label="النوع" name="customer_type" value={form.customer_type} onChange={handleChange} options={TYPE_OPTIONS} />
+          <Select label="النوع" name="customer_type" value={form.customer_type} onChange={handleChange} options={CUSTOMER_TYPE_OPTIONS} />
           <Select label="الجنس" name="gender" value={form.gender} onChange={handleChange} options={GENDER_OPTIONS} />
         </div>
+
+        <Select label="الحالة" name="status" value={form.status} onChange={handleChange} options={CUSTOMER_STATUS_OPTIONS} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input label="تاريخ الميلاد" name="birth_date" type="date" value={form.birth_date} onChange={handleChange} />

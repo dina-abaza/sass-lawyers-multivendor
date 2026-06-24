@@ -4,17 +4,12 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { salaryApi, employeesApi } from '@/lib/api';
+import { QUERY_KEYS, PAYMENT_METHOD_OPTIONS } from '@/lib/constants';
 import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import ErrorMessage from '@/components/common/ErrorMessage';
-
-const PAYMENT_METHODS = [
-  { value: 'cash', label: 'نقداً' },
-  { value: 'bank', label: 'تحويل بنكي' },
-  { value: 'wallet', label: 'محفظة إلكترونية' },
-];
 
 const PAYMENT_LABEL = { cash: 'نقداً', bank: 'تحويل بنكي', wallet: 'محفظة إلكترونية' };
 
@@ -30,13 +25,13 @@ export default function SalarySheetsPage() {
   const [editError, setEditError] = useState(null);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['salary-sheets'],
+    queryKey: [QUERY_KEYS.SALARY_SHEETS],
     queryFn: () => salaryApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
 
   const { data: employees } = useQuery({
-    queryKey: ['employees-list'],
+    queryKey: [QUERY_KEYS.EMPLOYEES],
     queryFn: () => employeesApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -46,7 +41,7 @@ export default function SalarySheetsPage() {
     onSuccess: () => {
       setForm(EMPTY_FORM);
       setError(null);
-      qc.invalidateQueries({ queryKey: ['salary-sheets'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.SALARY_SHEETS] });
     },
     onError: setError,
   });
@@ -56,14 +51,14 @@ export default function SalarySheetsPage() {
     onSuccess: () => {
       setEditId(null);
       setEditError(null);
-      qc.invalidateQueries({ queryKey: ['salary-sheets'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.SALARY_SHEETS] });
     },
     onError: setEditError,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => salaryApi.delete(tenantApi, id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['salary-sheets'] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [QUERY_KEYS.SALARY_SHEETS] }),
   });
 
   const list = Array.isArray(data) ? data : data?.data ?? [];
@@ -99,7 +94,7 @@ export default function SalarySheetsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Select label="الموظف" name="employee_id" value={form.employee_id} onChange={handleChange} options={empOptions} required />
             <Input label="المبلغ" name="amount" type="number" value={form.amount} onChange={handleChange} required />
-            <Select label="طريقة الصرف" name="payment_method" value={form.payment_method} onChange={handleChange} options={PAYMENT_METHODS} />
+            <Select label="طريقة الصرف" name="payment_method" value={form.payment_method} onChange={handleChange} options={PAYMENT_METHOD_OPTIONS} />
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">ملاحظات</label>
@@ -136,7 +131,7 @@ export default function SalarySheetsPage() {
                       <Input name="amount" type="number" value={editForm.amount} onChange={handleEditChange} />
                     </td>
                     <td className="px-4 py-2">
-                      <Select name="payment_method" value={editForm.payment_method} onChange={handleEditChange} options={PAYMENT_METHODS} />
+                      <Select name="payment_method" value={editForm.payment_method} onChange={handleEditChange} options={PAYMENT_METHOD_OPTIONS} />
                     </td>
                     <td className="px-4 py-2">
                       <input name="notes" value={editForm.notes} onChange={handleEditChange}

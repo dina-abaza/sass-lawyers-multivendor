@@ -6,6 +6,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { contractsApi, customersApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
@@ -23,7 +25,7 @@ export default function CreateContractPage() {
   const [invoiceInfo, setInvoiceInfo] = useState(null);
 
   const { data: customers } = useQuery({
-    queryKey: ['customers-list'],
+    queryKey: [QUERY_KEYS.CUSTOMERS],
     queryFn: () => customersApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -54,11 +56,6 @@ export default function CreateContractPage() {
   });
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
 
   if (invoiceInfo) {
     const contract = invoiceInfo.data;

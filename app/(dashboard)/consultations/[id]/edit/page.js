@@ -6,27 +6,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { consultationsApi, customersApi } from '@/lib/api';
+import { toOptions } from '@/lib/utils';
+import { QUERY_KEYS, CONSULTATION_TYPE_OPTIONS, CONSULTATION_CLASSIFICATION_OPTIONS } from '@/lib/constants';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/common/ErrorMessage';
 import Spinner from '@/components/common/Spinner';
-
-const CONSULT_TYPES = [
-  { value: 'oral', label: 'شفهية' },
-  { value: 'written', label: 'مكتوبة' },
-];
-
-const CLASSIFICATIONS = [
-  { value: 'commercial', label: 'تجارية' },
-  { value: 'civil', label: 'مدنية' },
-  { value: 'criminal', label: 'جنائية' },
-  { value: 'family', label: 'أسرة' },
-  { value: 'labor', label: 'عمالية' },
-  { value: 'environmental', label: 'بيئية' },
-  { value: 'investment', label: 'استثمارية' },
-  { value: 'international', label: 'دولية' },
-];
 
 export default function EditConsultationPage() {
   const { id } = useParams();
@@ -43,7 +29,7 @@ export default function EditConsultationPage() {
   });
 
   const { data: customers } = useQuery({
-    queryKey: ['customers-list'],
+    queryKey: [QUERY_KEYS.CUSTOMERS],
     queryFn: () => customersApi.getAll(tenantApi).then((r) => r.data),
     enabled: !!tenantApi,
   });
@@ -75,11 +61,6 @@ export default function EditConsultationPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  function toOptions(raw) {
-    const list = Array.isArray(raw) ? raw : raw?.data ?? [];
-    return list.map((x) => ({ value: x.id, label: x.name }));
-  }
-
   if (isLoading || !form) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
 
   return (
@@ -110,7 +91,7 @@ export default function EditConsultationPage() {
             name="consultation_type"
             value={form.consultation_type}
             onChange={handleChange}
-            options={CONSULT_TYPES}
+            options={CONSULTATION_TYPE_OPTIONS}
             required
           />
           <Select
@@ -118,7 +99,7 @@ export default function EditConsultationPage() {
             name="general_classification"
             value={form.general_classification}
             onChange={handleChange}
-            options={CLASSIFICATIONS}
+            options={CONSULTATION_CLASSIFICATION_OPTIONS}
             required
           />
         </div>
