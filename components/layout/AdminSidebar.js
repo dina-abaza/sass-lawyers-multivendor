@@ -14,10 +14,10 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
     href === '/admin/dashboard' ? pathname === href : pathname === href;
 
   const linkCls = (href) =>
-    `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
+    `relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
       isActive(href)
-        ? 'bg-navy-700 text-white shadow-sm shadow-navy-700/20'
-        : 'text-slate-600 hover:bg-navy-50 hover:text-navy-800'
+        ? 'bg-white/10 text-white shadow-sm'
+        : 'text-white/60 hover:bg-white/8 hover:text-white/90'
     }`;
 
   const navLinks = [
@@ -40,27 +40,32 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
 
   const subsLinks = [
     { href: '/admin/subscriptions', label: 'قائمة الباقات' },
-    { href: '/admin/subscriptions/create', label: '+ إضافة باقة' },
+    { href: '/admin/subscriptions/create', label: 'إضافة باقة' },
     { href: '/admin/subscriptions/management', label: 'إدارة الاشتراكات' },
   ];
 
+  const subsActive = pathname.startsWith('/admin/subscriptions');
+
   const sidebarContent = (
-    <aside className="w-64 h-full bg-white flex flex-col border-s border-[#e4e9f2]">
+    <aside className="w-64 h-full flex flex-col"
+      style={{ background: 'linear-gradient(180deg, #081A3A 0%, #050F22 100%)' }}>
+
       {/* Brand */}
-      <div className="h-16 flex items-center px-4 border-b border-[#e4e9f2] flex-shrink-0">
+      <div className="h-16 flex items-center px-4 border-b border-white/8 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-9 h-9 rounded-xl bg-navy-700 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ring-2 ring-[#D4AF37]/40"
+            style={{ background: 'linear-gradient(135deg, #D4AF37, #B8961F)' }}>
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-navy-900 text-sm truncate">لوحة المدير</p>
-            <p className="text-xs text-slate-400">إدارة المنصة</p>
+            <p className="font-bold text-white text-sm truncate">لوحة المدير</p>
+            <p className="text-xs text-white/40">إدارة المنصة</p>
           </div>
         </div>
         {onMobileClose && (
-          <button onClick={onMobileClose} className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+          <button onClick={onMobileClose} className="lg:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/50">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -72,7 +77,11 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
       <nav className="flex-1 overflow-y-auto py-3 px-2.5 space-y-0.5">
         {navLinks.map(item => (
           <Link key={item.href} href={item.href} onClick={onMobileClose} className={linkCls(item.href)}>
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {isActive(item.href) && (
+              <span className="absolute inset-y-1.5 start-0 w-0.5 rounded-full bg-[#D4AF37]" />
+            )}
+            <svg className={`w-4 h-4 flex-shrink-0 ${isActive(item.href) ? 'text-[#D4AF37]' : 'text-white/40'}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive(item.href) ? 2.5 : 2} d={item.icon} />
             </svg>
             {item.label}
@@ -83,40 +92,43 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
         <div>
           <button
             onClick={() => setSubsOpen(o => !o)}
-            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-150 ${
-              pathname.startsWith('/admin/subscriptions')
-                ? 'text-navy-700 bg-navy-50'
-                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-800'
+            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              subsActive
+                ? 'bg-white/10 text-white'
+                : 'text-white/60 hover:bg-white/8 hover:text-white/90'
             }`}
           >
-            <svg className={`w-4 h-4 flex-shrink-0 ${pathname.startsWith('/admin/subscriptions') ? 'text-navy-600' : 'text-slate-400'}`}
+            <svg className={`w-4 h-4 flex-shrink-0 ${subsActive ? 'text-[#D4AF37]' : 'text-white/40'}`}
               fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
-            <span className="flex-1 text-right text-xs tracking-wide uppercase">الباقات</span>
-            <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${subsOpen ? 'rotate-180' : ''} ${pathname.startsWith('/admin/subscriptions') ? 'text-navy-500' : 'text-slate-300'}`}
+            <span className="flex-1 text-right">الباقات</span>
+            <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${subsOpen ? 'rotate-180' : ''} text-white/30`}
               fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           <div
-            style={{ maxHeight: subsOpen ? `${subsLinks.length * 40}px` : '0px' }}
+            style={{ maxHeight: subsOpen ? `${subsLinks.length * 44}px` : '0px' }}
             className="overflow-hidden transition-all duration-300 ease-in-out"
           >
-            <div className="ms-3.5 border-s-2 border-navy-100 ps-2 py-1 space-y-0.5">
+            <div className="ms-3.5 border-s-2 border-[#D4AF37]/20 ps-2 py-1 space-y-0.5">
               {subsLinks.map(item => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={onMobileClose}
-                  className={`flex items-center px-2.5 py-1.5 rounded-lg text-sm transition-all duration-150 ${
+                  className={`flex items-center px-2.5 py-2 rounded-lg text-sm transition-all duration-150 ${
                     pathname === item.href
-                      ? 'bg-navy-700 text-white font-medium shadow-sm shadow-navy-700/15'
-                      : 'text-slate-600 hover:bg-navy-50 hover:text-navy-800'
+                      ? 'bg-white/12 text-white font-medium'
+                      : 'text-white/50 hover:bg-white/8 hover:text-white/80'
                   }`}
                 >
+                  {pathname === item.href && (
+                    <span className="w-1 h-1 rounded-full bg-[#D4AF37] ms-1 me-2 flex-shrink-0" />
+                  )}
                   {item.label}
                 </Link>
               ))}
@@ -126,22 +138,20 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
       </nav>
 
       {/* Footer */}
-      <div className="flex-shrink-0 p-3 border-t border-[#e4e9f2]">
+      <div className="flex-shrink-0 p-3 border-t border-white/8">
         <Link href="/admin/profile" onClick={onMobileClose}
-          className="flex items-center gap-2.5 mb-2 px-2 py-1.5 rounded-lg hover:bg-navy-50 transition-colors group">
-          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+          className="flex items-center gap-2.5 mb-2 px-2 py-1.5 rounded-xl hover:bg-white/8 transition-colors group">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[#081A3A] font-bold text-sm flex-shrink-0 ring-2 ring-[#D4AF37]/30"
+            style={{ background: 'linear-gradient(135deg, #D4AF37, #E8C94A)' }}>
             {(user?.name || 'A').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-800 truncate group-hover:text-navy-700">{user?.name || 'المدير'}</p>
-            <p className="text-xs text-slate-400 truncate">{user?.email || ''}</p>
+            <p className="text-xs font-semibold text-white/80 truncate group-hover:text-white">{user?.name || 'المدير'}</p>
+            <p className="text-xs text-white/30 truncate">{user?.email || ''}</p>
           </div>
-          <svg className="w-3.5 h-3.5 text-slate-300 group-hover:text-navy-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a4 4 0 01-2.828 1.172H7v-2a4 4 0 011.172-2.828L9 13z" />
-          </svg>
         </Link>
         <button onClick={logout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-lg transition-colors">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
@@ -158,7 +168,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
       </div>
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 flex">
-          <div className="fixed inset-0 bg-navy-950/40 backdrop-blur-sm" onClick={onMobileClose} />
+          <div className="fixed inset-0 bg-[#081A3A]/60 backdrop-blur-sm" onClick={onMobileClose} />
           <div className="relative z-50 w-72 h-full shadow-2xl">{sidebarContent}</div>
         </div>
       )}

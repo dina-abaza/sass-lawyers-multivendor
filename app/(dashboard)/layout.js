@@ -42,14 +42,14 @@ function getRequiredPermission(pathname) {
 function UnauthorizedPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
-      <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center mb-4">
-        <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="w-20 h-20 rounded-2xl bg-[#c0392b]/[0.06] ring-1 ring-[#c0392b]/15 flex items-center justify-center mb-5 shadow-sm">
+        <svg className="w-9 h-9 text-[#c0392b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       </div>
-      <h2 className="text-xl font-bold text-slate-800 mb-2">غير مصرح بالوصول</h2>
-      <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
+      <h2 className="text-xl font-bold text-navy-900 mb-2">غير مصرح بالوصول</h2>
+      <p className="text-[#4a5568] text-sm max-w-xs leading-relaxed">
         ليس لديك صلاحية لعرض هذه الصفحة. تواصل مع مدير المكتب لمنحك الصلاحية المطلوبة.
       </p>
     </div>
@@ -58,16 +58,17 @@ function UnauthorizedPage() {
 
 function MobileTopBar({ onMenuOpen }) {
   return (
-    <div className="lg:hidden flex items-center h-14 px-4 bg-white border-b border-[#e4e9f2] sticky top-0 z-30">
+    <div className="lg:hidden flex items-center h-14 px-4 bg-white/90 backdrop-blur border-b border-[#e2e6f0] sticky top-0 z-30">
       <button
         onClick={onMenuOpen}
-        className="p-2 rounded-lg hover:bg-navy-50 text-slate-600 hover:text-navy-700 transition-colors"
+        className="p-2 rounded-lg hover:bg-navy-50 text-navy-700 hover:text-navy-800 transition-colors"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <span className="mr-3 font-bold text-navy-900 text-sm">نظام المحاماة</span>
+      <span className="w-1 h-4 rounded-full bg-gold-500 mr-3" />
+      <span className="mr-2 font-bold text-navy-900 text-sm">نظام المحاماة</span>
     </div>
   );
 }
@@ -86,10 +87,10 @@ export default function DashboardLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f4f6fb]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc]">
         <div className="flex flex-col items-center gap-3">
           <Spinner size="lg" />
-          <p className="text-sm text-slate-500">جارٍ التحميل...</p>
+          <p className="text-sm text-[#8896a7]">جارٍ التحميل...</p>
         </div>
       </div>
     );
@@ -101,7 +102,7 @@ export default function DashboardLayout({ children }) {
   const allowed = hasPermission(requiredPermission);
 
   return (
-    <div className="flex min-h-screen bg-[#f4f6fb]">
+    <div className="flex min-h-screen bg-[#f8f9fc]">
       <Sidebar
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}

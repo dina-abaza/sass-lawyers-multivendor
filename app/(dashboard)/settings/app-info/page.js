@@ -7,6 +7,9 @@ import { appInfoApi } from '@/lib/api';
 import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 
+const fieldCls = 'w-full border border-[#E2E6F0] rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#081A3A]/20 focus:border-[#081A3A] bg-white transition-colors text-[#0A1628] placeholder:text-[#8896A7]';
+const labelCls = 'text-sm font-medium text-[#4A5568]';
+
 export default function AppInfoPage() {
   const { tenantApi, isOwner } = useAuth();
   const queryClient = useQueryClient();
@@ -75,34 +78,51 @@ export default function AppInfoPage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">إعدادات المكتب</h1>
-        <p className="text-gray-500 mt-1 text-sm">معلومات وهوية المكتب في النظام</p>
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-5">
+
+      {/* Header */}
+      <div className="rounded-2xl p-5 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' }}>
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, #D4AF37 0%, transparent 60%)' }} />
+        <div className="relative flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
+            <svg className="w-6 h-6 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[#D4AF37] text-xs font-semibold tracking-widest uppercase mb-0.5">الإعدادات</p>
+            <h1 className="text-xl font-bold" style={{ color: '#ffffff' }}>إعدادات المكتب</h1>
+            <p className="text-white/50 text-sm mt-0.5">معلومات وهوية المكتب في النظام</p>
+          </div>
+        </div>
       </div>
 
-      {/* عرض فقط للجميع */}
+      {/* عرض فقط لغير الـ owner */}
       {!isOwner && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-          <div className="flex items-center gap-4">
+        <div className="bg-white rounded-2xl border border-[#E2E6F0] p-6 shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
+          <div className="flex items-center gap-5">
             {info?.logo ? (
-              <img src={info.logo} alt="شعار المكتب" className="w-16 h-16 object-contain rounded-lg border border-gray-100" />
+              <img src={info.logo} alt="شعار المكتب" className="w-16 h-16 object-contain rounded-xl border border-[#E2E6F0]" />
             ) : (
-              <div className="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              <div className="w-16 h-16 rounded-xl bg-[#EBF0FA] flex items-center justify-center flex-shrink-0">
+                <svg className="w-8 h-8 text-[#081A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
             )}
-            <div>
-              <p className="text-lg font-bold text-gray-900">{info?.app_name ?? '—'}</p>
-              <p className="text-sm text-gray-500 mt-0.5">
-                ساعات العمل اليومية: <span className="font-medium text-gray-700">{info?.working_hours ?? '—'} ساعة</span>
+            <div className="space-y-1.5">
+              <p className="text-lg font-bold text-[#0A1628]">{info?.app_name ?? '—'}</p>
+              <p className="text-sm text-[#8896A7]">
+                ساعات العمل اليومية: <span className="font-semibold text-[#4A5568]">{info?.working_hours ?? '—'} ساعة</span>
               </p>
               {info?.vat_percentage !== undefined && (
-                <p className="text-sm text-gray-500 mt-0.5">
-                  نسبة الضريبة (VAT): <span className="font-medium text-gray-700">{info.vat_percentage}%</span>
+                <p className="text-sm text-[#8896A7]">
+                  نسبة الضريبة (VAT): <span className="font-semibold text-[#4A5568]">{info.vat_percentage}%</span>
                 </p>
               )}
             </div>
@@ -112,93 +132,85 @@ export default function AppInfoPage() {
 
       {/* فورم التعديل للـ owner فقط */}
       {isOwner && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
-          <h2 className="font-semibold text-gray-800">تعديل بيانات المكتب</h2>
+        <div className="bg-white rounded-2xl border border-[#E2E6F0] p-6 shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
+          <h2 className="font-semibold text-[#0A1628] mb-5 flex items-center gap-2">
+            <span className="w-1 h-4 rounded-full bg-[#D4AF37] inline-block" />
+            تعديل بيانات المكتب
+          </h2>
 
-          <form
-            onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(); }}
-            className="space-y-5"
-          >
+          <form onSubmit={(e) => { e.preventDefault(); setError(null); mutation.mutate(); }} className="space-y-5">
+
             {/* الشعار */}
             <div className="flex items-center gap-5">
               <div
-                className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-400 transition overflow-hidden bg-gray-50"
+                className="w-20 h-20 rounded-xl border-2 border-dashed border-[#E2E6F0] flex items-center justify-center cursor-pointer hover:border-[#081A3A]/40 transition overflow-hidden bg-[#F8F9FC]"
                 onClick={() => fileRef.current?.click()}
               >
                 {logoPreview ? (
                   <img src={logoPreview} alt="شعار المكتب" className="w-full h-full object-contain" />
                 ) : (
-                  <svg className="w-7 h-7 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  <svg className="w-7 h-7 text-[#8896A7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 )}
               </div>
               <div>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
+                <button type="button" onClick={() => fileRef.current?.click()}
+                  className="text-sm text-[#D4AF37] hover:text-[#B8961F] font-semibold transition-colors">
                   {logoPreview ? 'تغيير الشعار' : 'رفع شعار المكتب'}
                 </button>
-                <p className="text-xs text-gray-400 mt-0.5">PNG أو JPG أو SVG — حجم أقصى 2MB</p>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/png,image/jpg,image/jpeg,image/svg+xml"
-                  className="hidden"
-                  onChange={handleLogoChange}
-                />
+                <p className="text-xs text-[#8896A7] mt-1">PNG أو JPG أو SVG — حجم أقصى 2MB</p>
+                <input ref={fileRef} type="file" accept="image/png,image/jpg,image/jpeg,image/svg+xml"
+                  className="hidden" onChange={handleLogoChange} />
               </div>
             </div>
 
             {/* اسم المكتب */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">اسم المكتب <span className="text-red-500">*</span></label>
-              <input
-                value={form.app_name}
+            <div className="flex flex-col gap-1.5">
+              <label className={labelCls}>اسم المكتب <span className="text-red-500">*</span></label>
+              <input value={form.app_name}
                 onChange={(e) => setForm((p) => ({ ...p, app_name: e.target.value }))}
-                required
-                placeholder="مثال: مكتب المستشار عبدالله للمحاماة"
-                className="h-10 rounded-lg border border-gray-300 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                required placeholder="مثال: مكتب المستشار عبدالله للمحاماة"
+                className={fieldCls} />
             </div>
 
             {/* ساعات العمل */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">ساعات العمل اليومية <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                min={1}
-                max={24}
-                value={form.working_hours}
+            <div className="flex flex-col gap-1.5">
+              <label className={labelCls}>ساعات العمل اليومية <span className="text-red-500">*</span></label>
+              <input type="number" min={1} max={24} value={form.working_hours}
                 onChange={(e) => setForm((p) => ({ ...p, working_hours: e.target.value }))}
-                required
-                placeholder="8"
-                className="h-10 rounded-lg border border-gray-300 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-32"
-              />
-              <p className="text-xs text-gray-400">تُستخدم لحساب الحضور والانصراف</p>
+                required placeholder="8"
+                className={`${fieldCls} w-36`} />
+              <p className="text-xs text-[#8896A7]">تُستخدم لحساب الحضور والانصراف</p>
             </div>
 
             {/* نسبة الضريبة */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">نسبة الضريبة (VAT %)</label>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                step="0.01"
-                value={form.vat_percentage}
+            <div className="flex flex-col gap-1.5">
+              <label className={labelCls}>نسبة الضريبة (VAT %)</label>
+              <input type="number" min={0} max={100} step="0.01" value={form.vat_percentage}
                 onChange={(e) => setForm((p) => ({ ...p, vat_percentage: e.target.value }))}
                 placeholder="15"
-                className="h-10 rounded-lg border border-gray-300 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-32"
-              />
-              <p className="text-xs text-gray-400">تُضاف تلقائياً على الفواتير</p>
+                className={`${fieldCls} w-36`} />
+              <p className="text-xs text-[#8896A7]">تُضاف تلقائياً على الفواتير</p>
             </div>
 
-            {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
-            {success && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">✓ تم حفظ إعدادات المكتب بنجاح</p>}
+            {error && (
+              <div className="flex items-start gap-2 text-sm text-red-700 bg-red-50 border border-red-200 px-4 py-3 rounded-xl">
+                <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-3 rounded-xl">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                تم حفظ إعدادات المكتب بنجاح
+              </div>
+            )}
 
             <Button type="submit" loading={mutation.isPending}>حفظ الإعدادات</Button>
           </form>

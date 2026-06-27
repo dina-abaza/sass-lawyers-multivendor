@@ -36,7 +36,7 @@ export default function Pricing() {
     <section id="pricing" className="py-20 bg-[#f4f6fb]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="inline-block bg-navy-700 text-white text-xs font-medium px-4 py-1.5 rounded-full mb-4">الأسعار</span>
+          <span className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full mb-4" style={{ background: "#081A3A", color: "#ffffff" }}>الأسعار</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-900">ابدأ رحلتك مع الخطة المناسبة</h2>
           <p className="mt-3 text-slate-500">اختر الباقة التي تناسب حجم مكتبك، ويمكنك الترقية أو التخفيض في أي وقت.</p>
         </div>
@@ -46,9 +46,8 @@ export default function Pricing() {
           <div className="inline-flex items-center bg-white border border-[#e4e9f2] rounded-full p-1 gap-1 shadow-sm">
             {['monthly', 'yearly'].map(b => (
               <button key={b} onClick={() => setBilling(b)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-150 ${
-                  billing === b ? 'bg-navy-700 text-white shadow-sm' : 'text-slate-500 hover:text-navy-700'
-                }`}>
+                style={billing === b ? { background: 'linear-gradient(135deg, #081A3A, #0D2452)', color: '#ffffff' } : {}}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-150 ${billing === b ? 'shadow-sm' : 'text-slate-500 hover:text-navy-700'}`}>
                 {b === 'monthly' ? 'شهري' : 'سنوي'}
               </button>
             ))}
@@ -74,30 +73,34 @@ export default function Pricing() {
                 <div key={plan.id}
                   className={`relative rounded-2xl p-6 flex flex-col transition-all duration-200 ${
                     featured
-                      ? 'bg-navy-700 text-white shadow-xl shadow-navy-900/20 scale-[1.02]'
-                      : 'bg-white border border-[#e4e9f2] shadow-sm hover:shadow-md hover:border-navy-200'
-                  }`}>
+                      ? 'shadow-xl scale-[1.02]'
+                      : 'bg-white border border-[#e4e9f2] shadow-sm hover:shadow-md'
+                  }`}
+                  style={featured ? { background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' } : {}}>
                   {featured && (
-                    <span className="absolute -top-3 right-1/2 translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                    <span className="absolute -top-3 right-1/2 translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full shadow-sm" style={{ background: "#D4AF37", color: "#081A3A" }}>
                       الأكثر طلباً
                     </span>
                   )}
-                  <h3 className={`text-lg font-bold ${featured ? 'text-white' : 'text-navy-900'}`}>{plan.name}</h3>
-                  <p className={`text-sm mt-1 ${featured ? 'text-navy-100' : 'text-slate-400'}`}>الباقة المثالية لمكتبك</p>
+                  <h3 className={`text-lg font-bold ${!featured ? 'text-navy-900' : ''}`}
+                    style={featured ? { color: '#ffffff' } : {}}>{plan.name}</h3>
+                  <p className={`text-sm mt-1 ${!featured ? 'text-slate-400' : ''}`}
+                    style={featured ? { color: 'rgba(255,255,255,0.6)' } : {}}>الباقة المثالية لمكتبك</p>
 
                   <div className="mt-5 flex items-baseline gap-1">
-                    <span className={`text-3xl font-extrabold ${featured ? 'text-white' : 'text-navy-900'}`}>
+                    <span className={`text-3xl font-extrabold ${!featured ? 'text-navy-900' : ''}`}
+                      style={featured ? { color: '#D4AF37' } : {}}>
                       {Number(price ?? 0).toLocaleString('ar-SA')}
                     </span>
-                    <span className={`text-sm ${featured ? 'text-navy-100' : 'text-slate-400'}`}>
+                    <span className={`text-sm ${!featured ? 'text-slate-400' : ''}`}
+                      style={featured ? { color: 'rgba(255,255,255,0.5)' } : {}}>
                       ر.س / {billing === 'monthly' ? 'شهر' : 'سنة'}
                     </span>
                   </div>
 
                   <Link href={`/register?plan=${plan.id}&billing=${billing}`}
-                    className={`mt-5 block text-center py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                      featured ? 'bg-white text-navy-700 hover:bg-navy-50' : 'bg-navy-700 text-white hover:bg-navy-800'
-                    }`}>
+                    className="mt-5 block text-center py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    style={featured ? { background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' } : { background: 'linear-gradient(135deg, #D4AF37, #B8961F)', color: '#081A3A', boxShadow: '0 4px 12px rgba(212,175,55,0.3)' }}>
                     ابدأ الآن
                   </Link>
 
@@ -107,14 +110,14 @@ export default function Pricing() {
                       if (f.isBoolean && !val) return null;
                       return (
                         <li key={f.key} className="flex items-center gap-2.5 text-sm">
-                          <span className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                            featured ? 'bg-white/20' : 'bg-navy-50'
-                          }`}>
-                            <svg className={`w-2.5 h-2.5 ${featured ? 'text-white' : 'text-navy-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={featured ? { background: 'rgba(212,175,55,0.2)' } : { background: '#EEF1F8' }}>
+                            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                              style={featured ? { color: '#D4AF37' } : { color: '#081A3A' }}>
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
                           </span>
-                          <span className={featured ? 'text-navy-50' : 'text-slate-600'}>{f.label(val)}</span>
+                          <span style={featured ? { color: 'rgba(255,255,255,0.8)' } : { color: '#4A5568' }}>{f.label(val)}</span>
                         </li>
                       );
                     })}

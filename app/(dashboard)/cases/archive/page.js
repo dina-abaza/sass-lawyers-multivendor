@@ -35,7 +35,7 @@ export default function ArchivePage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-16"><Spinner size="lg" /></div>
+        <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>
       ) : error ? (
         <ErrorMessage error={error} />
       ) : cases.length === 0 ? (

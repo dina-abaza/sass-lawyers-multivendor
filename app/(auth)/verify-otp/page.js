@@ -59,7 +59,7 @@ function VerifyOtpForm() {
         dir="ltr"
       />
 
-      <Button type="submit" loading={loading} className="w-full" size="lg">
+      <Button type="submit" variant="gold" loading={loading} className="w-full" size="lg">
         تأكيد الرمز
       </Button>
     </form>

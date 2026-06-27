@@ -8,19 +8,24 @@ import Spinner from '@/components/common/Spinner';
 import Button from '@/components/ui/Button';
 
 const TABS = [
-  { key: '',         label: 'الكل'     },
-  { key: 'canceled', label: 'منتهية'   },
-  { key: 'active',   label: 'نشطة'     },
-  { key: 'pending',  label: 'البلغة'   },
-  { key: 'cancelled',label: 'الملغاة'  },
+  { key: '',          label: 'الكل'    },
+  { key: 'canceled',  label: 'منتهية'  },
+  { key: 'active',    label: 'نشطة'    },
+  { key: 'pending',   label: 'معلقة'   },
+  { key: 'cancelled', label: 'ملغاة'   },
 ];
 
 function badge(status) {
-  if (status === 'active')                        return { label: 'نشط',  cls: 'bg-green-100  text-green-700'  };
-  if (status === 'canceled' || status === 'cancelled') return { label: 'ملغى',  cls: 'bg-red-100    text-red-700'    };
-  if (status === 'pending')                       return { label: 'معلق', cls: 'bg-yellow-100 text-yellow-700' };
-  return { label: status || '—', cls: 'bg-gray-100 text-gray-600' };
+  if (status === 'active')
+    return { label: 'نشط',  cls: 'bg-emerald-50 text-emerald-700 border border-emerald-100' };
+  if (status === 'canceled' || status === 'cancelled')
+    return { label: 'ملغى',  cls: 'bg-red-50 text-red-700 border border-red-100'           };
+  if (status === 'pending')
+    return { label: 'معلق', cls: 'bg-[#FDF8E7] text-[#B8961F] border border-[#D4AF37]/20' };
+  return { label: status || '—', cls: 'bg-[#F8F9FC] text-[#8896A7] border border-[#E2E6F0]' };
 }
+
+const inputCls = 'border border-[#E2E6F0] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#081A3A]/20 focus:border-[#081A3A] bg-white transition-colors';
 
 export default function SubscriptionsManagementPage() {
   const searchParams = useSearchParams();
@@ -31,19 +36,16 @@ export default function SubscriptionsManagementPage() {
   const [cancelingId, setCancelingId] = useState(null);
   const [cancelNote,  setCancelNote]  = useState('');
 
-  // GET /api/subscriptions/status?status={key}
   const { data, isLoading } = useQuery({
     queryKey: ['tenant-subs-mgmt', activeTab],
     queryFn: () => subscriptionsApi.getByStatus(activeTab).then((r) => r.data),
   });
 
-  // POST /api/subscriptions/{id}/activate
   const activateMutation = useMutation({
     mutationFn: (id) => subscriptionsApi.activate(id, { payment_method: 'cash', notes: 'تفعيل يدوي' }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tenant-subs-mgmt'] }),
   });
 
-  // POST /api/subscriptions/{id}/cancel
   const cancelMutation = useMutation({
     mutationFn: ({ id, notes }) => subscriptionsApi.cancel(id, { notes }),
     onSuccess: () => {
@@ -58,18 +60,28 @@ export default function SubscriptionsManagementPage() {
 
   return (
     <div className="p-6 space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900">إدارة اشتراكات المكاتب</h1>
+      {/* Header */}
+      <div className="rounded-2xl p-6 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' }}>
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, #D4AF37 0%, transparent 60%)' }} />
+        <div className="relative">
+          <p className="text-[#D4AF37] text-xs font-semibold tracking-widest uppercase mb-1">لوحة المدير</p>
+          <h1 className="text-2xl font-bold" style={{ color: '#ffffff' }}>إدارة اشتراكات المكاتب</h1>
+          <p className="text-white/50 text-sm mt-1">تفعيل وإلغاء اشتراكات المكاتب</p>
+        </div>
+      </div>
 
       {/* Status Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit flex-wrap">
+      <div className="flex gap-1 bg-[#F8F9FC] rounded-xl p-1 w-fit flex-wrap border border-[#E2E6F0]">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => { setActiveTab(tab.key); setExpandedRow(null); setCancelingId(null); }}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === tab.key
-                ? 'bg-white shadow text-gray-900'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white shadow-sm text-[#0A1628] border border-[#E2E6F0]'
+                : 'text-[#8896A7] hover:text-[#4A5568]'
             }`}
           >
             {tab.label}
@@ -77,27 +89,23 @@ export default function SubscriptionsManagementPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E2E6F0] overflow-hidden shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[#F8F9FC] border-b border-[#E2E6F0]">
                 <tr>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">المكتب/المشترك</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الباقة المشترك</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">المبلغ المدفوع</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الحالة</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">تاريخ الانتهاء</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">تفاصيل الإلغاء</th>
-                  <th className="px-4 py-3 text-right font-medium text-gray-600">الإجراءات</th>
+                  {['المكتب/المشترك', 'الباقة', 'المبلغ المدفوع', 'الحالة', 'تاريخ الانتهاء', 'تفاصيل الإلغاء', 'الإجراءات'].map((h) => (
+                    <th key={h} className="px-4 py-3 text-right font-semibold text-[#4A5568] text-xs uppercase tracking-wide">{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {list.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-gray-400">لا توجد اشتراكات</td>
+                    <td colSpan={7} className="text-center py-14 text-[#8896A7]">لا توجد اشتراكات</td>
                   </tr>
                 ) : (
                   list.map((s) => {
@@ -108,34 +116,31 @@ export default function SubscriptionsManagementPage() {
 
                     return (
                       <React.Fragment key={s.id}>
-                        <tr className="border-b border-gray-100 hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium text-gray-900">{s.tenant_id || '—'}</td>
-                          <td className="px-4 py-3 text-gray-700">{s.plan?.name || '—'}</td>
-                          <td className="px-4 py-3 text-gray-700">{s.amount_paid} رس</td>
-                          <td className="px-4 py-3">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>{label}</span>
+                        <tr className="border-b border-[#F0F2F7] hover:bg-[#F8F9FC] transition-colors">
+                          <td className="px-4 py-3.5 font-semibold text-[#0A1628]">{s.tenant_id || '—'}</td>
+                          <td className="px-4 py-3.5 text-[#4A5568]">{s.plan?.name || '—'}</td>
+                          <td className="px-4 py-3.5 text-[#4A5568] font-medium">{s.amount_paid} ر.س</td>
+                          <td className="px-4 py-3.5">
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>{label}</span>
                           </td>
-                          <td className="px-4 py-3 text-gray-500 text-xs">{s.expires_at?.substring(0, 10) || '—'}</td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-3.5 text-[#8896A7] text-xs">{s.expires_at?.substring(0, 10) || '—'}</td>
+                          <td className="px-4 py-3.5">
                             {isCanceled && s.notes ? (
                               <button
                                 onClick={() => setExpandedRow(isExpanded ? null : s.id)}
-                                className="text-xs text-purple-600 hover:underline"
-                              >
+                                className="text-xs text-[#D4AF37] hover:text-[#B8961F] font-medium transition-colors">
                                 {isExpanded ? 'إخفاء' : 'عرض التفاصيل'}
                               </button>
                             ) : (
-                              <span className="text-gray-300 text-xs">—</span>
+                              <span className="text-[#8896A7] text-xs">—</span>
                             )}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-3.5">
                             <div className="flex items-center gap-2">
                               {s.status !== 'active' && (
-                                <Button
-                                  size="sm"
+                                <Button size="sm"
                                   onClick={() => activateMutation.mutate(s.id)}
-                                  loading={activateMutation.isPending && activateMutation.variables === s.id}
-                                >
+                                  loading={activateMutation.isPending && activateMutation.variables === s.id}>
                                   تفعيل
                                 </Button>
                               )}
@@ -148,33 +153,29 @@ export default function SubscriptionsManagementPage() {
                           </td>
                         </tr>
 
-                        {/* Notes row */}
                         {isExpanded && (
-                          <tr className="bg-gray-50 border-b border-gray-100">
-                            <td colSpan={7} className="px-6 py-3 text-xs text-gray-600">
+                          <tr className="bg-[#F8F9FC] border-b border-[#F0F2F7]">
+                            <td colSpan={7} className="px-6 py-3 text-xs text-[#4A5568]">
                               <pre className="whitespace-pre-wrap font-sans">{s.notes}</pre>
                             </td>
                           </tr>
                         )}
 
-                        {/* Cancel form row */}
                         {isCanceling && (
-                          <tr className="bg-red-50 border-b border-gray-100">
+                          <tr className="bg-red-50/60 border-b border-[#F0F2F7]">
                             <td colSpan={7} className="px-6 py-4">
-                              <p className="text-sm font-medium text-red-700 mb-2">سبب الإلغاء (مطلوب)</p>
+                              <p className="text-sm font-semibold text-red-700 mb-2">سبب الإلغاء (مطلوب)</p>
                               <div className="flex items-center gap-3">
                                 <input
                                   type="text" value={cancelNote}
                                   onChange={(e) => setCancelNote(e.target.value)}
                                   placeholder="اكتب سبب الإلغاء..."
-                                  className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                                  className="flex-1 border border-red-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
                                 />
-                                <Button
-                                  size="sm" variant="danger"
+                                <Button size="sm" variant="danger"
                                   onClick={() => cancelMutation.mutate({ id: s.id, notes: cancelNote })}
                                   disabled={!cancelNote.trim()}
-                                  loading={cancelMutation.isPending}
-                                >
+                                  loading={cancelMutation.isPending}>
                                   تأكيد الإلغاء
                                 </Button>
                                 <Button size="sm" variant="outline" onClick={() => setCancelingId(null)}>
@@ -194,8 +195,8 @@ export default function SubscriptionsManagementPage() {
         )}
 
         {!isLoading && list.length > 0 && (
-          <div className="px-4 py-3 border-t border-gray-100 text-sm text-gray-500">
-            عرض 1 - {list.length} من {total} سجل
+          <div className="px-4 py-3 border-t border-[#F0F2F7] text-xs text-[#8896A7]">
+            عرض 1–{list.length} من {total} سجل
           </div>
         )}
       </div>

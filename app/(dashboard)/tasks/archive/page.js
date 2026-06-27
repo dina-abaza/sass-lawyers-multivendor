@@ -34,7 +34,7 @@ export default function TasksArchivePage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12"><Spinner size="lg" /></div>
+        <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>
       ) : list.length === 0 ? (
         <div className="text-center py-12 text-gray-500">لا توجد مهام مؤرشفة</div>
       ) : (

@@ -49,7 +49,7 @@ export default function EditWakalaPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  if (isLoading) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
+  if (isLoading) return <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>;
 
   return (
     <div className="p-6 max-w-xl">

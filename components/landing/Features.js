@@ -21,18 +21,17 @@ export default function Features() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {FEATURES.map((f) => (
             <div key={f.title}
-              className={`rounded-2xl border p-6 transition-all hover:shadow-md hover:shadow-navy-700/5 hover:-translate-y-0.5 duration-200 ${
-                f.featured ? 'bg-navy-700 border-navy-700 text-white' : 'bg-white border-[#e4e9f2]'
-              }`}>
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${
-                f.featured ? 'bg-white/15' : 'bg-navy-50 text-navy-700'
-              }`}>
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              className="rounded-2xl border p-6 transition-all hover:shadow-md hover:-translate-y-0.5 duration-200"
+              style={{ background: '#ffffff', borderColor: f.featured ? '#D4AF37' : '#e4e9f2' }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                style={f.featured ? { background: 'rgba(212,175,55,0.15)' } : { background: 'rgba(212,175,55,0.08)' }}>
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  style={{ color: '#D4AF37' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={f.icon} />
                 </svg>
               </div>
-              <h3 className={`font-bold mb-1.5 ${f.featured ? 'text-white' : 'text-navy-900'}`}>{f.title}</h3>
-              <p className={`text-sm leading-relaxed ${f.featured ? 'text-white/75' : 'text-slate-500'}`}>{f.desc}</p>
+              <h3 className="font-bold mb-1.5" style={{ color: '#081A3A' }}>{f.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: '#64748b' }}>{f.desc}</p>
             </div>
           ))}
         </div>

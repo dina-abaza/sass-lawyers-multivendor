@@ -21,11 +21,11 @@ const FEATURES = [
 ];
 
 const STATUS_MAP = {
-  active:    { label: 'نشط',       color: 'bg-green-100 text-green-700' },
-  trial:     { label: 'تجريبي',   color: 'bg-blue-100 text-blue-700' },
-  pending:   { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-700' },
-  expired:   { label: 'منتهي',    color: 'bg-red-100 text-red-700' },
-  cancelled: { label: 'ملغي',     color: 'bg-gray-100 text-gray-600' },
+  active:    { label: 'نشط',           color: 'bg-emerald-100 text-emerald-700' },
+  trial:     { label: 'تجريبي',        color: 'bg-[#EBF0FA] text-[#081A3A]' },
+  pending:   { label: 'قيد المراجعة', color: 'bg-amber-100 text-amber-700' },
+  expired:   { label: 'منتهي',         color: 'bg-red-100 text-red-700' },
+  cancelled: { label: 'ملغي',          color: 'bg-[#F0F2F7] text-[#8896A7]' },
 };
 
 function formatDate(iso) {
@@ -42,19 +42,18 @@ function CurrentSubscriptionCard({ tenantApi }) {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 flex justify-center">
+      <div className="bg-white rounded-2xl border border-[#E2E6F0] p-6 flex justify-center shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
         <Spinner />
       </div>
     );
   }
 
-  // استخراج البيانات بمرونة لأي شكل response
   const statusData = raw?.data ?? raw ?? null;
 
   if (!statusData || raw?.status === false) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-3 text-gray-400 text-sm">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-white rounded-2xl border border-[#E2E6F0] p-5 flex items-center gap-3 text-[#8896A7] text-sm shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
+        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -64,7 +63,7 @@ function CurrentSubscriptionCard({ tenantApi }) {
   }
 
   const status = statusData.status ?? statusData.subscription_status ?? '';
-  const statusInfo = STATUS_MAP[status] ?? { label: status, color: 'bg-gray-100 text-gray-600' };
+  const statusInfo = STATUS_MAP[status] ?? { label: status, color: 'bg-[#F0F2F7] text-[#8896A7]' };
   const planName = statusData.plan?.name ?? statusData.subscription?.name ?? statusData.name ?? '—';
   const startDate = statusData.start_date ?? statusData.created_at ?? null;
   const endDate = statusData.end_date ?? statusData.expires_at ?? statusData.next_billing_date ?? null;
@@ -72,42 +71,47 @@ function CurrentSubscriptionCard({ tenantApi }) {
   const remainingDays = statusData.remaining_days ?? statusData.days_remaining ?? null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
-      <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
+    <div className="bg-white rounded-2xl border border-[#E2E6F0] p-5 shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
+      <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
         <div>
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">اشتراكي الحالي</p>
-          <h2 className="text-lg font-bold text-gray-900">{planName}</h2>
+          <p className="text-xs text-[#8896A7] font-semibold uppercase tracking-wider mb-1">اشتراكي الحالي</p>
+          <h2 className="text-lg font-bold text-[#0A1628]">{planName}</h2>
         </div>
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${statusInfo.color}`}>
           {statusInfo.label}
         </span>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {startDate && (
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs text-gray-400 mb-1">تاريخ البدء</p>
-            <p className="text-sm font-semibold text-gray-800">{formatDate(startDate)}</p>
+          <div className="rounded-xl p-3" style={{ background: '#F8F9FC', border: '1px solid #E2E6F0' }}>
+            <p className="text-xs text-[#8896A7] mb-1 font-medium">تاريخ البدء</p>
+            <p className="text-sm font-bold text-[#0A1628]">{formatDate(startDate)}</p>
           </div>
         )}
         {endDate && (
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs text-gray-400 mb-1">تاريخ الانتهاء</p>
-            <p className="text-sm font-semibold text-gray-800">{formatDate(endDate)}</p>
+          <div className="rounded-xl p-3" style={{ background: '#F8F9FC', border: '1px solid #E2E6F0' }}>
+            <p className="text-xs text-[#8896A7] mb-1 font-medium">تاريخ الانتهاء</p>
+            <p className="text-sm font-bold text-[#0A1628]">{formatDate(endDate)}</p>
           </div>
         )}
         {billingType && (
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs text-gray-400 mb-1">نوع الاشتراك</p>
-            <p className="text-sm font-semibold text-gray-800">
+          <div className="rounded-xl p-3" style={{ background: '#F8F9FC', border: '1px solid #E2E6F0' }}>
+            <p className="text-xs text-[#8896A7] mb-1 font-medium">نوع الاشتراك</p>
+            <p className="text-sm font-bold text-[#0A1628]">
               {billingType === 'monthly' ? 'شهري' : billingType === 'yearly' ? 'سنوي' : billingType}
             </p>
           </div>
         )}
         {remainingDays !== null && remainingDays !== undefined && (
-          <div className={`rounded-lg p-3 ${remainingDays <= 7 ? 'bg-red-50' : 'bg-blue-50'}`}>
-            <p className={`text-xs mb-1 ${remainingDays <= 7 ? 'text-red-400' : 'text-blue-400'}`}>الأيام المتبقية</p>
-            <p className={`text-sm font-semibold ${remainingDays <= 7 ? 'text-red-700' : 'text-blue-700'}`}>
+          <div className="rounded-xl p-3"
+            style={remainingDays <= 7
+              ? { background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.15)' }
+              : { background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)' }}>
+            <p className="text-xs mb-1 font-medium" style={{ color: remainingDays <= 7 ? '#DC2626' : '#8896A7' }}>
+              الأيام المتبقية
+            </p>
+            <p className="text-sm font-bold" style={{ color: remainingDays <= 7 ? '#DC2626' : '#D4AF37' }}>
               {remainingDays} يوم
             </p>
           </div>
@@ -154,38 +158,54 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
+
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">الاشتراكات</h1>
-        <p className="text-gray-500 mt-1">إدارة اشتراكك ومعرفة الباقات المتاحة</p>
+      <div className="rounded-2xl p-5 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' }}>
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, #D4AF37 0%, transparent 60%)' }} />
+        <div className="relative flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
+            <svg className="w-6 h-6 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[#D4AF37] text-xs font-semibold tracking-widest uppercase mb-0.5">النظام</p>
+            <h1 className="text-xl font-bold" style={{ color: '#ffffff' }}>الاشتراكات</h1>
+            <p className="text-white/50 text-sm mt-0.5">إدارة اشتراكك ومعرفة الباقات المتاحة</p>
+          </div>
+        </div>
       </div>
 
       {/* الاشتراك الحالي */}
       <CurrentSubscriptionCard tenantApi={tenantApi} />
 
-      {/* Billing toggle */}
+      {/* Billing toggle + title */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-lg font-semibold text-gray-800">الباقات المتاحة</h2>
-        <div className="inline-flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+        <h2 className="font-semibold text-[#0A1628] flex items-center gap-2">
+          <span className="w-1 h-4 rounded-full bg-[#D4AF37] inline-block" />
+          الباقات المتاحة
+        </h2>
+        <div className="inline-flex items-center rounded-xl p-1 gap-1"
+          style={{ background: '#F0F4FA', border: '1px solid #E2E6F0' }}>
           <button
             onClick={() => setBillingType('monthly')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              billingType === 'monthly'
-                ? 'bg-white shadow text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
+            className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+            style={billingType === 'monthly'
+              ? { background: 'linear-gradient(135deg, #081A3A, #0D2452)', color: '#ffffff', boxShadow: '0 2px 6px rgba(8,26,58,0.2)' }
+              : { color: '#4A5568' }}>
             شهري
           </button>
           <button
             onClick={() => setBillingType('yearly')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              billingType === 'yearly'
-                ? 'bg-white shadow text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
+            className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+            style={billingType === 'yearly'
+              ? { background: 'linear-gradient(135deg, #081A3A, #0D2452)', color: '#ffffff', boxShadow: '0 2px 6px rgba(8,26,58,0.2)' }
+              : { color: '#4A5568' }}>
             سنوي
           </button>
         </div>
@@ -193,60 +213,73 @@ export default function SubscriptionsPage() {
 
       {/* Feedback messages */}
       {successMsg && (
-        <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+        <div className="rounded-2xl px-5 py-3.5 text-sm font-semibold flex items-center gap-3"
+          style={{ background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.2)', color: '#065F46' }}>
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
           {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-2xl px-5 py-3.5 text-sm font-semibold"
+          style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', color: '#991B1B' }}>
           {errorMsg}
         </div>
       )}
 
       {/* Plans */}
       {isLoading ? (
-        <div className="flex justify-center py-16">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <Spinner size="lg" />
         </div>
       ) : plans.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          لا توجد باقات متاحة حالياً، يرجى التواصل مع الإدارة.
+        <div className="text-center py-20 bg-white rounded-2xl border border-[#E2E6F0] shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
+          <p className="text-[#8896A7] text-sm">لا توجد باقات متاحة حالياً، يرجى التواصل مع الإدارة.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {plans.map((plan) => {
             const price = billingType === 'monthly' ? plan.price_monthly : plan.price_yearly;
             const isRequesting = requestMutation.isPending && pendingPlanId === plan.id;
 
             return (
-              <div
-                key={plan.id}
-                className="bg-white rounded-xl border border-gray-200 p-6 flex flex-col gap-5 hover:shadow-md transition-shadow"
-              >
+              <div key={plan.id}
+                className="bg-white rounded-2xl border border-[#E2E6F0] p-6 flex flex-col gap-5 shadow-[0_2px_8px_rgba(8,26,58,0.05)] hover:shadow-[0_4px_16px_rgba(8,26,58,0.1)] transition-shadow">
+
+                {/* Plan header */}
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">{plan.name}</h2>
-                  <p className="text-3xl font-bold text-blue-600 mt-2">
-                    {Number(price).toLocaleString('ar-SA')}
-                    <span className="text-base font-normal text-gray-500">
+                  <div className="w-full h-1 rounded-full mb-4" style={{ background: 'linear-gradient(90deg, #D4AF37, #B8961F)' }} />
+                  <h2 className="text-lg font-bold text-[#0A1628]">{plan.name}</h2>
+                  <p className="mt-2">
+                    <span className="text-3xl font-bold" style={{ color: '#081A3A' }}>
+                      {Number(price).toLocaleString('ar-SA')}
+                    </span>
+                    <span className="text-sm text-[#8896A7] font-medium">
                       {' '}ر.س / {billingType === 'monthly' ? 'شهر' : 'سنة'}
                     </span>
                   </p>
                   {plan.trial_days > 0 && (
-                    <p className="text-sm text-green-600 mt-1 font-medium">
+                    <p className="text-sm font-semibold mt-1.5" style={{ color: '#D4AF37' }}>
                       {plan.trial_days} يوم تجريبي مجاني
                     </p>
                   )}
                 </div>
 
-                <ul className="space-y-2 flex-1">
+                {/* Features */}
+                <ul className="space-y-2.5 flex-1">
                   {FEATURES.map((f) => {
                     const val = plan[f.key];
                     const label = f.format(val);
                     const positive = f.isBoolean ? Boolean(val) : true;
                     return (
-                      <li key={f.key} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">{f.label}</span>
-                        <span className={`font-medium ${f.isBoolean ? (positive ? 'text-green-600' : 'text-gray-400') : 'text-gray-900'}`}>
+                      <li key={f.key} className="flex items-center justify-between text-sm border-b border-[#F0F2F7] pb-2 last:border-0 last:pb-0">
+                        <span className="text-[#4A5568]">{f.label}</span>
+                        <span className={`font-semibold text-xs px-2 py-0.5 rounded-full ${
+                          f.isBoolean
+                            ? (positive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#F0F2F7] text-[#8896A7]')
+                            : 'text-[#0A1628]'
+                        }`}>
                           {label}
                         </span>
                       </li>
@@ -254,12 +287,15 @@ export default function SubscriptionsPage() {
                   })}
                 </ul>
 
+                {/* CTA button */}
                 <button
                   onClick={() => handleRequest(plan.id)}
                   disabled={isRequesting}
-                  className="w-full py-2.5 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isRequesting ? 'جارٍ إرسال الطلب...' : 'اختر هذه الباقة'}
+                  className="w-full py-2.5 px-4 rounded-xl text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #D4AF37, #B8961F)', color: '#081A3A', boxShadow: '0 4px 12px rgba(212,175,55,0.35)' }}>
+                  {isRequesting
+                    ? <><span className="w-4 h-4 border-2 border-[#081A3A]/30 border-t-[#081A3A] rounded-full animate-spin" /> جارٍ إرسال الطلب...</>
+                    : 'اختر هذه الباقة'}
                 </button>
               </div>
             );
@@ -267,7 +303,7 @@ export default function SubscriptionsPage() {
         </div>
       )}
 
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-[#8896A7] text-center pb-2">
         بعد اختيار الباقة، سيتم مراجعة طلبك من قِبل الإدارة وتفعيل اشتراكك في أقرب وقت.
       </p>
     </div>

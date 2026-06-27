@@ -1,46 +1,148 @@
 @import "tailwindcss";
 
-/* ─── Navy Blue Design System ──────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════
+   PREMIUM LAW FIRM DESIGN SYSTEM
+   Deep Navy + Rich Gold · RTL-aware · Tailwind v4
+   ════════════════════════════════════════════════════════════════ */
+
 @theme {
-  --color-navy-50:  #f0f4ff;
-  --color-navy-100: #dce8fd;
-  --color-navy-200: #b8cffb;
-  --color-navy-300: #85aaf6;
-  --color-navy-400: #507def;
-  --color-navy-500: #2856e8;
-  --color-navy-600: #1840cc;
-  --color-navy-700: #1a3a8a;
-  --color-navy-800: #162d6e;
-  --color-navy-900: #0f1f50;
-  --color-navy-950: #080f2e;
+  /* ─── Navy scale (remapped to deep-navy design system) ───────────
+     Used pervasively across the app as `navy-*`. Remapping here
+     upgrades every existing className automatically. */
+  --color-navy-50:  #eef1f8;
+  --color-navy-100: #e2e6f0;
+  --color-navy-200: #c7cfe2;
+  --color-navy-300: #9eaac8;
+  --color-navy-400: #6b7ba0;
+  --color-navy-500: #3d4f78;
+  --color-navy-600: #1a2f5c;
+  --color-navy-700: #0d2452;
+  --color-navy-800: #081a3a;
+  --color-navy-900: #050f22;
+  --color-navy-950: #030914;
+
+  /* ─── Gold accent scale ──────────────────────────────────────── */
+  --color-gold-50:  #fdf9ec;
+  --color-gold-100: #faf0cf;
+  --color-gold-200: #f3df9c;
+  --color-gold-300: #ecca64;
+  --color-gold-400: #e8c94a;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8961f;
+  --color-gold-700: #8f7318;
+  --color-gold-800: #6b561a;
+  --color-gold-900: #5a4818;
+
+  /* ─── Semantic status colors (premium-tuned) ─────────────────── */
+  --color-success: #0d7a4e;
+  --color-warning: #c07800;
+  --color-danger:  #c0392b;
+
+  /* ─── Premium layered shadows (override defaults) ────────────── */
+  --shadow-sm: 0 1px 3px rgba(8,26,58,0.06), 0 1px 2px rgba(8,26,58,0.04);
+  --shadow-md: 0 4px 12px rgba(8,26,58,0.08), 0 2px 4px rgba(8,26,58,0.05);
+  --shadow-lg: 0 8px 24px rgba(8,26,58,0.10), 0 4px 8px rgba(8,26,58,0.06);
+  --shadow-xl: 0 16px 40px rgba(8,26,58,0.12), 0 8px 16px rgba(8,26,58,0.08);
 }
 
-/* ─── Root Tokens ───────────────────────────────────────────────── */
+/* ─── Root design tokens ─────────────────────────────────────────── */
 :root {
-  --bg-page:    #f4f6fb;
-  --bg-card:    #ffffff;
-  --border-clr: #e4e9f2;
+  --primary:        #081a3a;
+  --primary-light:  #0d2452;
+  --primary-dark:   #050f22;
+
+  --accent:         #d4af37;
+  --accent-light:   #e8c94a;
+  --accent-dark:    #b8961f;
+
+  --surface:        #f8f9fc;
+  --surface-2:      #f0f2f7;
+  --border-clr:     #e2e6f0;
+
+  --text-primary:   #0a1628;
+  --text-secondary: #4a5568;
+  --text-muted:     #8896a7;
+
+  /* legacy aliases (kept for any prior references) */
+  --bg-page:        #f8f9fc;
+  --bg-card:        #ffffff;
 }
 
-/* ─── Base ──────────────────────────────────────────────────────── */
-html { scroll-behavior: smooth; }
+/* ─── Base ───────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  background: var(--bg-page);
-  color: #1e293b;
+  background: var(--surface);
+  color: var(--text-primary);
   font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* ─── Animations ────────────────────────────────────────────────── */
+/* Strong, balanced heading hierarchy */
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+  letter-spacing: -0.011em;
+}
+
+/* ─── Selection ──────────────────────────────────────────────────── */
+::selection {
+  background: rgba(212, 175, 55, 0.28);
+  color: var(--primary-dark);
+}
+
+/* ─── Focus ring (accessible, premium) ───────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(13, 36, 82, 0.55);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fadeIn { animation: fadeIn 0.2s ease-out both; }
+.animate-fadeIn { animation: fadeIn 0.25s ease-out both; }
 
-/* ─── Scrollbar ─────────────────────────────────────────────────── */
-::-webkit-scrollbar          { width: 5px; height: 5px; }
-::-webkit-scrollbar-track    { background: #f0f4ff; }
-::-webkit-scrollbar-thumb    { background: #b8cffb; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #1a3a8a; }
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scaleIn { animation: scaleIn 0.2s ease-out both; }
+
+/* ─── Premium scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 9px; height: 9px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    {
+  background: #c7cfe2;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: #9eaac8; background-clip: padding-box; }
+
+/* Dark scrollbar inside the navy sidebar */
+.scrollbar-navy::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.25);
+  background-clip: padding-box;
+}
+.scrollbar-navy::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.45);
+  background-clip: padding-box;
+}
+
+* { scrollbar-width: thin; scrollbar-color: #c7cfe2 transparent; }
+.scrollbar-navy { scrollbar-color: rgba(212,175,55,0.3) transparent; }
+
+/* ─── Card hover lift helper ─────────────────────────────────────── */
+.card-lift { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.card-lift:hover { transform: translateY(-2px); }

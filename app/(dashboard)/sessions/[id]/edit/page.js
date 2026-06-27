@@ -75,7 +75,7 @@ export default function EditSessionPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  if (isLoading || !form) return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
+  if (isLoading || !form) return <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>;
 
   return (
     <div className="p-6 max-w-2xl">

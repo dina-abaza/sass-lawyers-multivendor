@@ -25,17 +25,18 @@ export default function CTAFooter() {
           <div className="absolute bottom-0 left-0 w-60 h-60 bg-navy-600/10 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-snug">
+          <h2 className="text-2xl sm:text-4xl font-extrabold leading-snug" style={{ color: '#ffffff' }}>
             مستقبل الخدمات القانونية يبدأ من هنا
           </h2>
-          <div className="mt-4 w-40 h-1 mx-auto rounded-full bg-gradient-to-l from-navy-400 to-navy-200" />
+          <div className="mt-4 w-40 h-1 mx-auto rounded-full" style={{ background: "linear-gradient(90deg, #D4AF37, #B8961F)" }} />
           <p className="mt-6 text-navy-200 leading-relaxed max-w-xl mx-auto text-sm sm:text-base">
             نظام سحابي شامل يجمع بين إدارة القضايا، العملاء، والفواتير في منصة واحدة. مصمم خصيصاً للمحامين.
           </p>
           <Link href="/register"
-            className="mt-8 inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-navy-900 bg-white hover:bg-navy-50 shadow-lg transition-all">
+            className="mt-8 inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold transition-all"
+            style={{ background: "#ffffff", color: "#081A3A", boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
             جرب مجاناً 30 يوم
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#D4AF37' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>

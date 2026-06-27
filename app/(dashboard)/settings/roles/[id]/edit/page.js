@@ -55,7 +55,7 @@ export default function EditRolePage() {
   }
 
   if (roleLoading || permsLoading) {
-    return <div className="flex justify-center py-12"><Spinner size="lg" /></div>;
+    return <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>;
   }
 
   return (

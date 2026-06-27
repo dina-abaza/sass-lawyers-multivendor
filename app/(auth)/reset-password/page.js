@@ -55,7 +55,7 @@ function ResetPasswordForm() {
       <Input label="كلمة المرور الجديدة" name="password" type="password" placeholder="••••••••" value={form.password} onChange={handleChange} required dir="ltr" />
       <Input label="تأكيد كلمة المرور" name="password_confirmation" type="password" placeholder="••••••••" value={form.password_confirmation} onChange={handleChange} required dir="ltr" />
 
-      <Button type="submit" loading={loading} className="w-full" size="lg">
+      <Button type="submit" variant="gold" loading={loading} className="w-full" size="lg">
         حفظ كلمة المرور
       </Button>
     </form>

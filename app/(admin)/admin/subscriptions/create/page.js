@@ -14,20 +14,14 @@ const FEATURES = [
 ];
 
 const INIT = {
-  name:                     '',
-  price_monthly:            '',
-  price_yearly:             '',
-  trial_days:               0,
-  max_users:                0,
-  max_clients:              0,
-  max_sessions:             0,
-  max_cases:                0,
-  max_tasks:                0,
-  has_templates:            false,
-  has_financial_management: false,
-  has_attendance:           false,
-  has_lawyer_reports:       false,
+  name: '', price_monthly: '', price_yearly: '', trial_days: 0,
+  max_users: 0, max_clients: 0, max_sessions: 0, max_cases: 0, max_tasks: 0,
+  has_templates: false, has_financial_management: false,
+  has_attendance: false, has_lawyer_reports: false,
 };
+
+const fieldCls = 'w-full border border-[#E2E6F0] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#081A3A]/20 focus:border-[#081A3A] bg-white transition-colors text-[#0A1628] placeholder:text-[#8896A7]';
+const labelCls = 'block text-xs font-medium text-[#4A5568] mb-1';
 
 export default function CreateSubscriptionPage() {
   const router = useRouter();
@@ -35,7 +29,6 @@ export default function CreateSubscriptionPage() {
   const [form, setForm] = useState(INIT);
   const [error, setError] = useState('');
 
-  // POST /api/subscriptions
   const mutation = useMutation({
     mutationFn: (payload) => subscriptionsApi.create(payload),
     onSuccess: () => {
@@ -80,67 +73,69 @@ export default function CreateSubscriptionPage() {
   function numInput(key, label) {
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-        <input
-          type="number" name={key} value={form[key]} onChange={handleChange}
-          min="0"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
+        <label className={labelCls}>{label}</label>
+        <input type="number" name={key} value={form[key]} onChange={handleChange} min="0"
+          className={fieldCls} />
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center gap-3">
-        <button onClick={() => router.push('/admin/subscriptions')} className="text-gray-400 hover:text-gray-600">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h1 className="text-2xl font-bold text-gray-900">إضافة باقة جديدة</h1>
+    <div className="p-4">
+      {/* Header */}
+      <div className="rounded-2xl p-5 text-white relative overflow-hidden mb-4"
+        style={{ background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' }}>
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, #D4AF37 0%, transparent 60%)' }} />
+        <div className="relative flex items-center gap-3">
+          <button onClick={() => router.push('/admin/subscriptions')}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors shrink-0">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <p className="text-[#D4AF37] text-xs font-semibold tracking-widest uppercase mb-1">لوحة المدير</p>
+            <h1 className="text-2xl font-bold" style={{ color: '#ffffff' }}>إضافة باقة جديدة</h1>
+            <p className="text-white/50 text-sm mt-1">أدخل تفاصيل الباقة الجديدة</p>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl">
+      <div className="bg-white rounded-2xl border border-[#E2E6F0] p-4 max-w-2xl mx-auto shadow-[0_2px_8px_rgba(8,26,58,0.05)]">
         {error && (
-          <div className="mb-5 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-start gap-2">
+            <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name (full width) */}
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">اسم الباقة</label>
-            <input
-              type="text" name="name" value={form.name} onChange={handleChange}
+            <label className={labelCls}>اسم الباقة</label>
+            <input type="text" name="name" value={form.name} onChange={handleChange}
               required placeholder="مثال: الباقة الذهبية"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+              className={fieldCls} />
           </div>
 
-          {/* Prices */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">السعر الشهري</label>
-              <input
-                type="number" name="price_monthly" value={form.price_monthly}
+              <label className={labelCls}>السعر الشهري (ر.س)</label>
+              <input type="number" name="price_monthly" value={form.price_monthly}
                 onChange={handleChange} required min="0" step="0.01" placeholder="0.00"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
+                className={fieldCls} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">السعر السنوي</label>
-              <input
-                type="number" name="price_yearly" value={form.price_yearly}
+              <label className={labelCls}>السعر السنوي (ر.س)</label>
+              <input type="number" name="price_yearly" value={form.price_yearly}
                 onChange={handleChange} required min="0" step="0.01" placeholder="0.00"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
+                className={fieldCls} />
             </div>
           </div>
 
-          {/* Numeric limits */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {numInput('trial_days',   'أيام التجربة')}
             {numInput('max_users',    'المستخدمين')}
             {numInput('max_clients',  'العملاء')}
@@ -149,27 +144,9 @@ export default function CreateSubscriptionPage() {
             {numInput('max_tasks',    'المهام')}
           </div>
 
-          {/* Features */}
-          <div className="border-t border-gray-100 pt-5">
-            <p className="text-sm font-semibold text-gray-700 mb-3">المعيرات والصلاحيات</p>
-            <div className="grid grid-cols-2 gap-3">
-              {FEATURES.map(({ key, label }) => (
-                <label key={key} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox" name={key} checked={form[key]} onChange={handleChange}
-                    className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                  />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-3 pt-1">
             <Button type="submit" loading={mutation.isPending}>حفظ الباقة</Button>
-            <Button type="button" variant="outline" onClick={() => router.push('/admin/subscriptions')}>
-              إلغاء
-            </Button>
+            <Button type="button" variant="outline" onClick={() => router.push('/admin/subscriptions')}>إلغاء</Button>
           </div>
         </form>
       </div>

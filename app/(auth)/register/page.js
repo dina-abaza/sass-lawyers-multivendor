@@ -58,15 +58,15 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ background: "rgba(212,175,55,0.12)", border: "2px solid rgba(212,175,55,0.3)" }}>
+          <svg className="w-8 h-8" style={{ color: "#D4AF37" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <h2 className="text-xl font-bold text-gray-900">تم استلام طلبك بنجاح</h2>
         <p className="text-gray-600 text-sm">في انتظار موافقة الإدارة لتفعيل مكتبك.</p>
         <Link href="/login">
-          <Button className="w-full mt-2">العودة لتسجيل الدخول</Button>
+          <Button variant="gold" className="w-full mt-2">العودة لتسجيل الدخول</Button>
         </Link>
       </div>
     );
@@ -89,7 +89,7 @@ export default function RegisterPage() {
       <Input label="كلمة المرور" name="password" type="password" placeholder="••••••••" value={form.password} onChange={handleChange} required dir="ltr" />
       <Input label="تأكيد كلمة المرور" name="password_confirmation" type="password" placeholder="••••••••" value={form.password_confirmation} onChange={handleChange} required dir="ltr" />
 
-      <Button type="submit" loading={loading} className="w-full" size="lg">
+      <Button type="submit" variant="gold" loading={loading} className="w-full" size="lg">
         إنشاء الحساب
       </Button>
 

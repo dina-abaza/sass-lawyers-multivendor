@@ -99,7 +99,7 @@ export default function Workflow() {
     <section className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="inline-block bg-navy-700 text-white text-xs font-medium px-4 py-1.5 rounded-full mb-4">طبيعة العمل</span>
+          <span className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full mb-4" style={{ background: "#081A3A", color: "#ffffff" }}>طبيعة العمل</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-900">بيئة موحدة للعمل القانوني</h2>
           <p className="mt-3 text-slate-500">من إدارة المكتب إلى تنفيذ المهام اليومية، يوفر لك النظام تجربة متكاملة لتنظيم العمل.</p>
         </div>
@@ -118,24 +118,25 @@ export default function Workflow() {
               <button key={item.title} onClick={() => setActive(i)}
                 className={`w-full text-right rounded-xl border p-5 transition-all duration-200 ${
                   active === i
-                    ? 'border-navy-300 bg-navy-50 shadow-sm'
+                    ? 'shadow-sm'
                     : 'border-[#e4e9f2] bg-white hover:border-navy-200 hover:bg-navy-50/50'
-                }`}>
+                }`}
+                style={active === i ? { background: '#081A3A', borderColor: '#081A3A' } : {}}>
                 <div className="flex items-start gap-3">
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
-                    active === i ? 'bg-navy-700' : 'bg-gray-200'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${active !== i ? 'bg-gray-200' : ''}`}
+                  style={active === i ? { background: 'rgba(212,175,55,0.25)' } : {}}>
                     {active === i && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#D4AF37' }}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
                   <div>
-                    <h3 className={`font-bold mb-1 text-sm ${active === i ? 'text-navy-800' : 'text-slate-700'}`}>
+                    <h3 className={`font-bold mb-1 text-sm ${active === i ? '' : 'text-slate-700'}`}
+                      style={active === i ? { color: '#ffffff' } : {}}>
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                    <p className="text-sm leading-relaxed" style={active === i ? { color: 'rgba(255,255,255,0.7)' } : { color: '#64748b' }}>{item.desc}</p>
                   </div>
                 </div>
               </button>

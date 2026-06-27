@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
         dir="ltr"
       />
 
-      <Button type="submit" loading={loading} className="w-full" size="lg">
+      <Button type="submit" variant="gold" loading={loading} className="w-full" size="lg">
         إرسال الرمز
       </Button>
 

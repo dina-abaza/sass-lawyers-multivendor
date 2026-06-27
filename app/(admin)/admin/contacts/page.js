@@ -19,9 +19,16 @@ export default function ContactsPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-5 max-w-5xl mx-auto">
-      <div>
-        <h1 className="text-xl font-bold text-navy-900">رسائل التواصل</h1>
-        <p className="text-sm text-slate-500 mt-0.5">الرسائل الواردة من صفحة التواصل في الموقع</p>
+      {/* Header */}
+      <div className="rounded-2xl p-6 text-white relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #081A3A 0%, #0D2452 100%)' }}>
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 80% 50%, #D4AF37 0%, transparent 60%)' }} />
+        <div className="relative">
+          <p className="text-[#D4AF37] text-xs font-semibold tracking-widest uppercase mb-1">لوحة المدير</p>
+          <h1 className="text-2xl font-bold" style={{ color: '#ffffff' }}>رسائل التواصل</h1>
+          <p className="text-white/50 text-sm mt-1">الرسائل الواردة من صفحة التواصل في الموقع</p>
+        </div>
       </div>
 
       {isLoading ? (

@@ -64,7 +64,7 @@ export default function LawyerReportPage() {
       {/* التقرير */}
       {queryId && (
         reportLoading ? (
-          <div className="flex justify-center py-16"><Spinner size="lg" /></div>
+          <div className="flex items-center justify-center min-h-[60vh]"><Spinner size="lg" /></div>
         ) : !lawyer.id ? (
           <div className="text-center py-12 text-gray-400">لا توجد بيانات لهذا المحامي</div>
         ) : (
